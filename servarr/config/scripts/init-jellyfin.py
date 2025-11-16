@@ -41,7 +41,7 @@ def get(url: str, headers: dict):
     return response
 
 class APIError(Exception):
-    def __init__(self, status_code: int, body: dict):
+    def __init__(self, status_code: int, body: dict | str):
         super().__init__(status_code, body)
         self.status_code = status_code
         self.body = body
