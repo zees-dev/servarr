@@ -1,4 +1,3 @@
-{{- if .Values.initJellyseerr -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -90,5 +89,3 @@ spec:
         - name: jellyseerr-config
           persistentVolumeClaim:
             claimName: {{ printf "%s-jellyseerr-config" .Release.Name }}
-
-{{- end }}
