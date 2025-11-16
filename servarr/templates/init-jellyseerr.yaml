@@ -40,11 +40,11 @@ spec:
           - name: JELLYFIN_HOST
             value: "{{ .Release.Name }}-jellyfin.{{ .Release.Namespace }}.svc.cluster.local:8096"
           - name: JELLYFIN_USERNAME
-            value: "{{ $.Values.dash.username }}"
+            value: "{{ $.Values.global.username }}"
           - name: JELLYFIN_PASSWORD
-            value: "{{ $.Values.dash.password }}"
+            value: "{{ $.Values.global.password }}"
           - name: JELLYFIN_EMAIL
-            value: "{{ $.Values.dash.mail }}"
+            value: "{{ $.Values.global.mail }}"
           - name: RADARR_CONFIG_PATH
             value: "/radarr-config/config.xml"
           - name: RADARR_HOST

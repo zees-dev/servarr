@@ -50,20 +50,14 @@ global:
   storageClassName: &storageClassName "<replace-with-your-storage-class-name>"
   ingressClassName: &ingressClassName "<replace-with-your-ingress-class-name>"
   certManagerClusterIssuer: &issuer
-
-metrics:
-  enabled: &metricsEnabled false
-
-dash:
   username:
   password:
   mail:
   countryCode: "US"
   preferredLanguage: "en"
 
-torrent:
-  username:
-  password:
+metrics:
+  enabled: &metricsEnabled false
 
 volumes:
   storageClass: *storageClassName
@@ -287,13 +281,7 @@ flaresolverr:
 
 ### Jellyfin
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| dash.countryCode | string | US | Insert the Jellyfin country code |
-| dash.mail | string | No default value | Insert Jellyfin login mail (will be used also for Jellyseerr integration) |
-| dash.password | string | No default value | Insert Jellyfin password (will be used also for Jellyseerr) |
-| dash.preferredLanguage | string | en | Insert the Jellyfin preferred language |
-| dash.username | string | No default value | Insert the Jellyfin username (will be used also for Jellyseerr) |
+Jellyfin setup now reuses the shared global credentials (`global.username`, `global.password`, `global.mail`, `global.countryCode`, `global.preferredLanguage`).
 
 ### Global
 
@@ -302,6 +290,11 @@ flaresolverr:
 | global.certManagerClusterIssuer | string | No default value, leave empty if not required | Insert your cert manager cluster issuer, e.g.: letsencrypt-cloudflare. Do not remove the `&issuer` anchor! |
 | global.ingressClassName | string | nginx | Insert your ingress class here, e.g.: &ingressClassName nginx. Do not remove the `&ingressCassName` anchor, and do not leave the anchor value empty, otherwise you will face a `null` value error! |
 | global.storageClassName | string | `"network-block"` | Insert your storage class here, e.g.: &storageClassName network-block. Do not remove the `&storageClassName` anchor! |
+| global.username | string | No default value | Insert the shared Servarr username (used for Jellyfin, Jellyseerr, and qBitTorrent admin) |
+| global.password | string | No default value | Insert the shared Servarr password (used for Jellyfin, Jellyseerr, and qBitTorrent admin) |
+| global.mail | string | No default value | Insert Jellyfin login mail (also used for Jellyseerr integration) |
+| global.countryCode | string | US | Insert the Jellyfin country code |
+| global.preferredLanguage | string | en | Insert the Jellyfin preferred language |
 
 ### Prowlarr
 
@@ -336,8 +329,8 @@ flaresolverr:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | qbittorrent.csrf_protection | bool | false | Whether to enable or disable CSRF Protection on qBitTorrent WebGUI |
-| torrent.password | string | No default value | password of the qBitTorrent admin user. Must be at least of 8 characters. |
-| torrent.username | string | No default value | username of the qBitTorrent admin user |
+
+qBitTorrent admin credentials reuse the shared values under `global.username` and `global.password`.
 
 ### Storage
 

@@ -24,9 +24,9 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: TORRENT_USERNAME
-              value: {{ .Values.torrent.username }}
+              value: {{ .Values.global.username | quote }}
             - name: TORRENT_PASSWORD
-              value: {{ .Values.torrent.password }}
+              value: {{ .Values.global.password | quote }}
           command:
             - "/bin/sh"
             - "-ec"

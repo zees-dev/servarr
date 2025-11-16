@@ -9,7 +9,24 @@ global:
   # -- (string) Insert your cert manager cluster issuer, e.g.: letsencrypt-cloudflare. Do not remove the `&issuer` anchor!
   # @default -- No default value, leave empty if not required
   # @section -- Global
-  certManagerClusterIssuer: &issuer
+  certManagerClusterIssuer: &issuer ""
+  # -- (string) Insert the shared Servarr username (used for Jellyfin, Jellyseerr, and qBitTorrent admin)
+  # @section -- Global
+  username:
+  # -- (string) Insert the shared Servarr password (used for Jellyfin, Jellyseerr, and qBitTorrent admin)
+  # @section -- Global
+  password:
+  # -- (string) Insert Jellyfin login mail (also used for Jellyseerr integration)
+  # @section -- Global
+  mail:
+  # -- (string) Insert the Jellyfin country code
+  # @default -- US
+  # @section -- Global
+  countryCode: "US"
+  # -- (string) Insert the Jellyfin preferred language
+  # @default -- en
+  # @section -- Global
+  preferredLanguage: "en"
 
 metrics:
   # -- Anchor to set wether to deploy the export sidecar pods or not. Requires the Prometheus stack. Do not remove the `&metricsEnabled` anchor!
@@ -29,38 +46,6 @@ notifications:
     # @section -- Jellyseerr
     # @default -- No default value
     bot_apitoken:
-
-dash:
-  # -- (string) Insert the Jellyfin username (will be used also for Jellyseerr)
-  # @section -- Jellyfin
-  # @default -- No default value
-  username:
-  # -- (string) Insert Jellyfin password (will be used also for Jellyseerr)
-  # @section -- Jellyfin
-  # @default -- No default value
-  password:
-  # -- (string) Insert Jellyfin login mail (will be used also for Jellyseerr integration)
-  # @section -- Jellyfin
-  # @default -- No default value
-  mail:
-  # -- (string) Insert the Jellyfin country code
-  # @section -- Jellyfin
-  # @default -- US
-  countryCode: "US"
-  # -- (string) Insert the Jellyfin preferred language
-  # @section -- Jellyfin
-  # @default -- en
-  preferredLanguage: "en"
-
-torrent:
-  # -- (string) username of the qBitTorrent admin user
-  # @section -- Torrent
-  # @default -- No default value
-  username:
-  # -- (string) password of the qBitTorrent admin user. Must be at least of 8 characters.
-  # @section -- Torrent
-  # @default -- No default value
-  password:
 
 # -- The indexers list. Each element of the list is the yaml-formatted body of the [Prowlarr API request](https://prowlarr.com/docs/api/#/Indexer/post_api_v1_indexer) to add that index.
 # @default -- The body of the 1337x index is provided as default

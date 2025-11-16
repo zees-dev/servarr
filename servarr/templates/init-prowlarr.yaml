@@ -64,9 +64,9 @@ spec:
           - name: TORRENT_SERVICE
             value: "{{ .Release.Name }}-qbittorrent"
           - name: TORRENT_ADMIN
-            value: "{{ $.Values.torrent.username }}"
+            value: "{{ $.Values.global.username }}"
           - name: TORRENT_PASSWORD
-            value: "{{ $.Values.torrent.password }}"
+            value: "{{ $.Values.global.password }}"
           - name: PROWLARR_SERVICE
             value: "{{ .Release.Name }}-prowlarr:9696"
           - name: RADARR_SERVICE
