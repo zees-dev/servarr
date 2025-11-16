@@ -1,8 +1,4 @@
 global:
-  # -- (string) Insert your Prowlarr, Sonarr, Radarr API key here (one to rule them all!). Do not remove the `&apikey` anchor!
-  # @default -- No default value is configured for security reasons
-  # @section -- Global
-  apikey: &apikey
   # -- (string) Insert your storage class here, e.g.: &storageClassName network-block. Do not remove the `&storageClassName` anchor!
   # @section -- Global
   storageClassName: &storageClassName "network-block"
@@ -76,11 +72,41 @@ indexers:
   # @ignored
   - name: 1337x
     body:
-      added: "0001-01-01T00:00:00Z"
+      indexerUrls:
+        - https://1337x.to/
+        - https://1337x.st/
+        - https://x1337x.ws/
+        - https://x1337x.eu/
+        - https://x1337x.cc/
+      legacyUrls:
+        - https://1337x.is/
+        - https://1337x.gd/
+        - https://1337x.mrunblock.bond/
+        - https://1337x.abcproxy.org/
+        - https://1337x.so/
+        - https://1337x.unblockit.download/
+        - https://1337x.unblockninja.com/
+        - https://1337x.ninjaproxy1.com/
+        - https://1337x.proxyninja.org/
+        - https://1337x.proxyninja.net/
+        - https://1337x.torrentbay.st/
+        - https://1337x.torrentsbay.org/
+        - https://x1337x.se/
+      definitionName: 1337x
+      description: 1337X is a Public torrent site that offers verified torrent downloads
+      language: en-US
+      enable: true
+      redirect: false
+      supportsRss: true
+      supportsSearch: true
+      supportsRedirect: false
+      supportsPagination: false
       appProfileId: 1
+      protocol: torrent
+      privacy: public
       capabilities:
-        bookSearchParams:
-          - q
+        limitsMax: 100
+        limitsDefault: 100
         categories:
           - id: 5000
             name: TV
@@ -208,32 +234,31 @@ indexers:
               - id: 7030
                 name: Books/Comics
                 subCategories: []
-        limitsDefault: 100
-        limitsMax: 100
+        supportsRawSearch: true
+        searchParams:
+          - q
+          - q
+        tvSearchParams:
+          - q
+          - season
+          - ep
         movieSearchParams:
           - q
         musicSearchParams:
           - q
           - album
           - artist
-        searchParams:
+        bookSearchParams:
           - q
-          - q
-        supportsRawSearch: true
-        tvSearchParams:
-          - q
-          - season
-          - ep
-      configContract: CardigannSettings
-      definitionName: 1337x
-      description: 1337X is a Public torrent site that offers verified torrent downloads
+      priority: 20
       downloadClientId: 0
-      enable: true
+      added: "0001-01-01T00:00:00Z"
+      sortName: 1337x
+      name: 1337x
       fields:
         - name: definitionFile
           value: 1337x
         - name: baseUrl
-          value: https://1337x.proxyninja.org/
         - name: baseSettings.queryLimit
         - name: baseSettings.grabLimit
         - name: baseSettings.limitsUnit
@@ -242,82 +267,200 @@ indexers:
         - name: torrentBaseSettings.seedRatio
         - name: torrentBaseSettings.seedTime
         - name: torrentBaseSettings.packSeedTime
+        - name: torrentBaseSettings.preferMagnetUrl
+          value: false
+        - name: uploader
+        - name: info_uploader
+          value: 'You can filter by Uploader by entering a Case Sensitive username, or leave empty to get all results.<br>Note: this is the username of the Uploader and not the Groupname that often show up at the end of 1337x titles, eg -GalaxyRG.'
+        - name: info_flaresolverr
+          value: 'This site may use Cloudflare DDoS Protection, therefore Prowlarr requires <a href="https://wiki.servarr.com/prowlarr/faq#can-i-use-flaresolverr-indexers" target="_blank" rel="noreferrer">FlareSolverr</a> to access it.'
         - name: downloadlink
-          value: 1
+          value: 0
         - name: downloadlink2
-          value: 0
+          value: 1
+        - name: info_download
+          value: As the iTorrents .torrent download link on this site is known to fail from time to time, we suggest using the magnet link as a fallback. The BTCache and Torrage services are not supported because they require additional user interaction (a captcha for BTCache and a download button on Torrage.)
         - name: sort
-          value: 0
+          value: 2
         - name: type
           value: 1
-      implementation: Cardigann
       implementationName: Cardigann
-      indexerUrls:
-        - https://1337x.to/
-        - https://1337x.st/
-        - https://x1337x.ws/
-        - https://x1337x.eu/
-        - https://x1337x.se/
-        - https://1337x.so/
-        - https://1337x.unblockit.africa/
-        - https://1337x.unblockninja.com/
-        - https://1337x.ninjaproxy1.com/
-        - https://1337x.proxyninja.org/
-        - https://1337x.torrentbay.st/
+      implementation: Cardigann
+      configContract: CardigannSettings
       infoLink: https://wiki.servarr.com/prowlarr/supported-indexers#1337x
-      language: en-US
+      tags: []
+  - name: Knaben
+    body:
+      indexerUrls:
+        - https://knaben.org/
       legacyUrls:
-        - https://1337x.is/
-        - https://1337x.gd/
-        - https://1337x.nocensor.lol/
-        - https://1337x.unblockit.ink/
-        - https://1337x.nocensor.art/
-        - https://1337x.unblockit.bio/
-        - https://1337x.unblockit.boo/
-        - https://1337x.mrunblock.guru/
-        - https://1337x.mrunblock.life/
-        - https://1337x.unblockit.click/
-        - https://1337x.unblockit.asia/
-        - https://1337x.unblockit.mov/
-        - https://1337x.unblockit.rsvp/
-        - https://1337x.unblockit.vegas/
-        - https://1337x.unblockit.esq/
-        - https://1337x.unblockit.zip/
-        - https://1337x.unblockit.foo/
-        - https://1337x.unblockit.ing/
-        - https://1337x.mrunblock.bond/
-        - https://1337x.unblockit.date/
-        - https://1337x.unblockit.dad/
-      name: 1337x
-      priority: 25
-      privacy: public
-      protocol: torrent
+        - https://knaben.eu/
+      definitionName: Knaben
+      description: Knaben is a Public torrent meta-search engine
+      language: en-US
+      encoding: Unicode (UTF-8)
+      enable: true
       redirect: false
-      sortName: 1337x
-      supportsPagination: false
-      supportsRedirect: false
       supportsRss: true
       supportsSearch: true
-      tags:
-        - 1
-  - name: ilcorsaroblu
-    body:
+      supportsRedirect: false
+      supportsPagination: false
       appProfileId: 1
+      protocol: torrent
+      privacy: public
       capabilities:
-        bookSearchParams:
-          - q
+        limitsMax: 100
+        limitsDefault: 100
         categories:
-          - id: 6000
-            name: XXX
+          - id: 3000
+            name: Audio
+            subCategories:
+              - id: 3010
+                name: Audio/MP3
+                subCategories: []
+              - id: 3040
+                name: Audio/Lossless
+                subCategories: []
+              - id: 3030
+                name: Audio/Audiobook
+                subCategories: []
+              - id: 3020
+                name: Audio/Video
+                subCategories: []
+              - id: 3050
+                name: Audio/Other
+                subCategories: []
+          - id: 1100000
+            name: Audio
+            subCategories: []
+          - id: 1101000
+            name: MP3
+            subCategories: []
+          - id: 1102000
+            name: Lossless
+            subCategories: []
+          - id: 1103000
+            name: Audiobook
+            subCategories: []
+          - id: 1104000
+            name: Audio Video
+            subCategories: []
+          - id: 1105000
+            name: Radio
+            subCategories: []
+          - id: 1106000
+            name: Audio Other
+            subCategories: []
+          - id: 5000
+            name: TV
+            subCategories:
+              - id: 5040
+                name: TV/HD
+                subCategories: []
+              - id: 5030
+                name: TV/SD
+                subCategories: []
+              - id: 5045
+                name: TV/UHD
+                subCategories: []
+              - id: 5080
+                name: TV/Documentary
+                subCategories: []
+              - id: 5020
+                name: TV/Foreign
+                subCategories: []
+              - id: 5060
+                name: TV/Sport
+                subCategories: []
+              - id: 5050
+                name: TV/Other
+                subCategories: []
+              - id: 5070
+                name: TV/Anime
+                subCategories: []
+          - id: 2100000
+            name: TV
+            subCategories: []
+          - id: 2101000
+            name: TV HD
+            subCategories: []
+          - id: 2102000
+            name: TV SD
+            subCategories: []
+          - id: 2103000
+            name: TV UHD
+            subCategories: []
+          - id: 2104000
+            name: Documentary
+            subCategories: []
+          - id: 2105000
+            name: TV Foreign
+            subCategories: []
+          - id: 2106000
+            name: Sport
+            subCategories: []
+          - id: 2107000
+            name: Cartoon
+            subCategories: []
+          - id: 2108000
+            name: TV Other
+            subCategories: []
+          - id: 2000
+            name: Movies
+            subCategories:
+              - id: 2040
+                name: Movies/HD
+                subCategories: []
+              - id: 2030
+                name: Movies/SD
+                subCategories: []
+              - id: 2045
+                name: Movies/UHD
+                subCategories: []
+              - id: 2070
+                name: Movies/DVD
+                subCategories: []
+              - id: 2010
+                name: Movies/Foreign
+                subCategories: []
+              - id: 2060
+                name: Movies/3D
+                subCategories: []
+              - id: 2020
+                name: Movies/Other
+                subCategories: []
+          - id: 3100000
+            name: Movies
+            subCategories: []
+          - id: 3101000
+            name: Movies HD
+            subCategories: []
+          - id: 3102000
+            name: Movies SD
+            subCategories: []
+          - id: 3103000
+            name: Movies UHD
+            subCategories: []
+          - id: 3104000
+            name: Movies DVD
+            subCategories: []
+          - id: 3105000
+            name: Movies Foreign
+            subCategories: []
+          - id: 3106000
+            name: Movies Bollywood
+            subCategories: []
+          - id: 3107000
+            name: Movies 3D
+            subCategories: []
+          - id: 3108000
+            name: Movies Other
             subCategories: []
           - id: 4000
             name: PC
             subCategories:
-              - id: 4070
-                name: PC/Mobile-Android
-                subCategories: []
-              - id: 4060
-                name: PC/Mobile-iOS
+              - id: 4050
+                name: PC/Games
                 subCategories: []
               - id: 4010
                 name: PC/0day
@@ -325,12 +468,87 @@ indexers:
               - id: 4030
                 name: PC/Mac
                 subCategories: []
-              - id: 4050
-                name: PC/Games
+              - id: 4020
+                name: PC/ISO
                 subCategories: []
+              - id: 4040
+                name: PC/Mobile-Other
+                subCategories: []
+              - id: 4070
+                name: PC/Mobile-Android
+                subCategories: []
+              - id: 4060
+                name: PC/Mobile-iOS
+                subCategories: []
+          - id: 4100000
+            name: PC
+            subCategories: []
+          - id: 4101000
+            name: Games
+            subCategories: []
+          - id: 4102000
+            name: Software
+            subCategories: []
+          - id: 4103000
+            name: Mac
+            subCategories: []
+          - id: 4104000
+            name: Unix
+            subCategories: []
+          - id: 6000
+            name: XXX
+            subCategories:
+              - id: 6040
+                name: XXX/x264
+                subCategories: []
+              - id: 6060
+                name: XXX/ImageSet
+                subCategories: []
+              - id: 6070
+                name: XXX/Other
+                subCategories: []
+          - id: 5100000
+            name: XXX
+            subCategories: []
+          - id: 5101000
+            name: XXX Video
+            subCategories: []
+          - id: 5102000
+            name: XXX ImageSet
+            subCategories: []
+          - id: 5103000
+            name: XXX Games
+            subCategories: []
+          - id: 5104000
+            name: XXX Hentai
+            subCategories: []
+          - id: 5105000
+            name: XXX Other
+            subCategories: []
+          - id: 6100000
+            name: Anime
+            subCategories: []
+          - id: 6101000
+            name: Anime Subbed
+            subCategories: []
+          - id: 6102000
+            name: Anime Dubbed
+            subCategories: []
+          - id: 6103000
+            name: Anime Dual audio
+            subCategories: []
+          - id: 6104000
+            name: Anime Raw
+            subCategories: []
+          - id: 6105000
+            name: Music Video
+            subCategories: []
           - id: 7000
             name: Books
             subCategories:
+              - id: 7050
+                name: Books/Other
+                subCategories: []
               - id: 7020
                 name: Books/EBook
                 subCategories: []
@@ -340,84 +558,164 @@ indexers:
               - id: 7010
                 name: Books/Mags
                 subCategories: []
+              - id: 7040
+                name: Books/Technical
+                subCategories: []
+          - id: 6106000
+            name: Literature
+            subCategories: []
+          - id: 6107000
+            name: Music
+            subCategories: []
+          - id: 6108000
+            name: Anime non-english translated
+            subCategories: []
           - id: 1000
             name: Console
             subCategories:
+              - id: 1180
+                name: Console/PS4
+                subCategories: []
+              - id: 1080
+                name: Console/PS3
+                subCategories: []
+              - id: 1120
+                name: Console/PS Vita
+                subCategories: []
+              - id: 1020
+                name: Console/PSP
+                subCategories: []
+              - id: 1050
+                name: Console/XBox 360
+                subCategories: []
               - id: 1040
                 name: Console/XBox
                 subCategories: []
               - id: 1010
                 name: Console/NDS
                 subCategories: []
-          - id: 3000
-            name: Audio
-            subCategories:
-              - id: 3010
-                name: Audio/MP3
+              - id: 1030
+                name: Console/Wii
                 subCategories: []
-          - id: 2000
-            name: Movies
-            subCategories:
-              - id: 2040
-                name: Movies/HD
+              - id: 1130
+                name: Console/WiiU
                 subCategories: []
-              - id: 2020
-                name: Movies/Other
+              - id: 1110
+                name: Console/3DS
                 subCategories: []
-              - id: 2070
-                name: Movies/DVD
+              - id: 1090
+                name: Console/Other
                 subCategories: []
-              - id: 2060
-                name: Movies/3D
-                subCategories: []
-              - id: 2045
-                name: Movies/UHD
-                subCategories: []
-          - id: 5000
-            name: TV
-            subCategories:
-              - id: 5030
-                name: TV/SD
-                subCategories: []
-              - id: 5040
-                name: TV/HD
-                subCategories: []
-              - id: 5070
-                name: TV/Anime
-                subCategories: []
-              - id: 5060
-                name: TV/Sport
-                subCategories: []
-              - id: 5080
-                name: TV/Documentary
-                subCategories: []
-          - id: 8000
+          - id: 7100000
+            name: Console
+            subCategories: []
+          - id: 7101000
+            name: PS4
+            subCategories: []
+          - id: 7102000
+            name: PS3
+            subCategories: []
+          - id: 7103000
+            name: PS2
+            subCategories: []
+          - id: 7104000
+            name: PS1
+            subCategories: []
+          - id: 7105000
+            name: PS Vita
+            subCategories: []
+          - id: 7106000
+            name: PSP
+            subCategories: []
+          - id: 7107000
+            name: Xbox 360
+            subCategories: []
+          - id: 7108000
+            name: Xbox
+            subCategories: []
+          - id: 7109000
+            name: Switch
+            subCategories: []
+          - id: 7110000
+            name: NDS
+            subCategories: []
+          - id: 7111000
+            name: Wii
+            subCategories: []
+          - id: 7112000
+            name: WiiU
+            subCategories: []
+          - id: 7113000
+            name: 3DS
+            subCategories: []
+          - id: 7114000
+            name: GameCube
+            subCategories: []
+          - id: 7115000
             name: Other
             subCategories: []
-        limitsDefault: 100
-        limitsMax: 100
-        movieSearchParams:
-          - q
-        musicSearchParams:
-          - q
+          - id: 8100000
+            name: Mobile
+            subCategories: []
+          - id: 8101000
+            name: Android
+            subCategories: []
+          - id: 8102000
+            name: IOS
+            subCategories: []
+          - id: 8103000
+            name: PC Other
+            subCategories: []
+          - id: 9100000
+            name: Books
+            subCategories: []
+          - id: 9101000
+            name: EBooks
+            subCategories: []
+          - id: 9102000
+            name: Comics
+            subCategories: []
+          - id: 9103000
+            name: Magazines
+            subCategories: []
+          - id: 9104000
+            name: Technical
+            subCategories: []
+          - id: 9105000
+            name: Books Other
+            subCategories: []
+          - id: 8000
+            name: Other
+            subCategories:
+              - id: 8010
+                name: Other/Misc
+                subCategories: []
+          - id: 10100000
+            name: Other
+            subCategories: []
+          - id: 10101000
+            name: Other Misc
+            subCategories: []
+        supportsRawSearch: false
         searchParams:
           - q
-          - q
-        supportsRawSearch: false
         tvSearchParams:
           - q
           - season
           - ep
-      configContract: CardigannSettings
-      definitionName: ilcorsaroblu
-      description: il CorSaRo Blu is an ITALIAN Semi-Private site for TV / MOVIES / GENERAL
+        movieSearchParams:
+          - q
+        musicSearchParams:
+          - q
+        bookSearchParams:
+          - q
+      priority: 15
       downloadClientId: 0
-      enable: true
+      added: "0001-01-01T00:00:00Z"
+      sortName: knaben
+      name: Knaben
       fields:
-        - name: definitionFile
-          value: ilcorsaroblu
         - name: baseUrl
-          value: "https://ilcorsaroblu.org/"
         - name: baseSettings.queryLimit
         - name: baseSettings.grabLimit
         - name: baseSettings.limitsUnit
@@ -426,37 +724,245 @@ indexers:
         - name: torrentBaseSettings.seedRatio
         - name: torrentBaseSettings.seedTime
         - name: torrentBaseSettings.packSeedTime
-        - name: username
-          value: ""
-        - name: password
-          value: ""
-        - name: freeleech
+        - name: torrentBaseSettings.preferMagnetUrl
           value: false
-        - name: sort
-          value: 1
-        - name: type
-          value: 1
-      implementation: Cardigann
-      implementationName: Cardigann
+      implementationName: Knaben
+      implementation: Knaben
+      configContract: NoAuthTorrentBaseSettings
+      infoLink: https://wiki.servarr.com/prowlarr/supported-indexers#knaben
+      tags: []
+  - name: "The Pirate Bay"
+    body:
       indexerUrls:
-        - "https://ilcorsaroblu.org/"
-      infoLink: "https://wiki.servarr.com/prowlarr/supported-indexers#ilcorsaroblu"
-      language: it-IT
+        - https://thepiratebay.org/
+        - https://thepiratebay.unblockninja.com/
+        - https://thepiratebay.ninjaproxy1.com/
+        - https://tpb.proxyninja.org/
+        - https://thepiratebay.proxyninja.net/
+        - https://thepiratebay.torrentbay.st/
+        - https://tpb.skynetcloud.site/
+        - https://piratehaven.xyz/
+        - https://mirrorbay.top/
+        - https://thepiratebay0.org/
+        - https://thepiratebay10.xyz/
+        - https://pirateproxylive.org/
+        - https://thehiddenbay.com/
+        - https://thepiratebay.zone/
+        - https://tpb.party/
+        - https://piratebayproxy.live/
+        - https://piratebay.live/
+        - https://piratebay.party/
+        - https://thepiratebay.party/
+        - https://thepiratebaye.org/
+        - https://thepiratebay.cloud/
+        - https://tpb-proxy.xyz/
+        - https://tpb.re/
+        - https://tpirbay.site/
+        - https://tpirbay.top/
+        - https://tpirbay.xyz/
       legacyUrls:
-        - "http://ilcorsaroblu.org/"
-        - "https://www.ilcorsaroblu.info/"
-        - "https://www.ilcorsaroblu.org/"
-        - "https://ilcorsaroblu.online/"
-      name: Il Corsaro Blu
-      priority: 25
-      privacy: semiPrivate
-      protocol: torrent
+        - https://pirate-proxy.page/
+        - https://5mins.shop/
+        - https://tpb.surf/
+        - https://tpb.monster/
+        - https://thepiratebay.host/
+        - https://piratetoday.xyz/
+        - https://tpb.wtf/
+        - https://piratebayo3klnzokct3wt5yyxb2vpebbuyjl7m623iaxmqhsd52coid.onion.ly/
+        - https://piratebayo3klnzokct3wt5yyxb2vpebbuyjl7m623iaxmqhsd52coid.tor2web.to/
+        - https://piratebayo3klnzokct3wt5yyxb2vpebbuyjl7m623iaxmqhsd52coid.tor2web.link/
+        - https://tpb25.ukpass.co/
+        - https://tpb29.ukpass.co/
+        - https://piratenow.xyz/
+        - https://pirate-proxy.ink/
+        - https://proxifiedpiratebay.org/
+        - https://unlockedpiratebay.com/
+        - https://tpb.one/
+        - https://piratebayorg.net/
+        - https://tpbproxy.click/
+        - https://pirateproxy.live/
+        - https://ukpiratebay.org/
+        - https://piratebay.by/
+        - https://pirate-proxy.date/
+        - https://thepirateproxy.net/
+        - https://thepiratebay.abcproxy.org/
+        - https://tpb.proxyninja.net/
+        - https://tpb31.ukpass.co/
+        - https://thepiratebay10.org/
+        - https://pirate-proxy.africa/
+        - https://5mins.eu/
+        - https://piratebay.army/
+        - https://tpb-visit.me/
+        - https://pirate-proxy.ong/
+      definitionName: thepiratebay
+      description: The Pirate Bay (TPB) is the galaxy’s most resilient Public BitTorrent site
+      language: en-US
+      enable: true
       redirect: false
-      sortName: il corsaro blu
-      supportsPagination: false
-      supportsRedirect: false
       supportsRss: true
       supportsSearch: true
+      supportsRedirect: false
+      supportsPagination: false
+      appProfileId: 1
+      protocol: torrent
+      privacy: public
+      capabilities:
+        limitsMax: 100
+        limitsDefault: 100
+        categories:
+          - id: 3000
+            name: Audio
+            subCategories:
+              - id: 3030
+                name: Audio/Audiobook
+                subCategories: []
+              - id: 3040
+                name: Audio/Lossless
+                subCategories: []
+              - id: 3050
+                name: Audio/Other
+                subCategories: []
+              - id: 3020
+                name: Audio/Video
+                subCategories: []
+          - id: 2000
+            name: Movies
+            subCategories:
+              - id: 2020
+                name: Movies/Other
+                subCategories: []
+              - id: 2040
+                name: Movies/HD
+                subCategories: []
+              - id: 2060
+                name: Movies/3D
+                subCategories: []
+              - id: 2030
+                name: Movies/SD
+                subCategories: []
+              - id: 2045
+                name: Movies/UHD
+                subCategories: []
+          - id: 5000
+            name: TV
+            subCategories:
+              - id: 5050
+                name: TV/Other
+                subCategories: []
+              - id: 5040
+                name: TV/HD
+                subCategories: []
+              - id: 5045
+                name: TV/UHD
+                subCategories: []
+          - id: 4000
+            name: PC
+            subCategories:
+              - id: 4030
+                name: PC/Mac
+                subCategories: []
+              - id: 4040
+                name: PC/Mobile-Other
+                subCategories: []
+              - id: 4060
+                name: PC/Mobile-iOS
+                subCategories: []
+              - id: 4070
+                name: PC/Mobile-Android
+                subCategories: []
+              - id: 4050
+                name: PC/Games
+                subCategories: []
+          - id: 1000
+            name: Console
+            subCategories:
+              - id: 1180
+                name: Console/PS4
+                subCategories: []
+              - id: 1040
+                name: Console/XBox
+                subCategories: []
+              - id: 1030
+                name: Console/Wii
+                subCategories: []
+              - id: 1090
+                name: Console/Other
+                subCategories: []
+          - id: 6000
+            name: XXX
+            subCategories:
+              - id: 6010
+                name: XXX/DVD
+                subCategories: []
+              - id: 6060
+                name: XXX/ImageSet
+                subCategories: []
+              - id: 6040
+                name: XXX/x264
+                subCategories: []
+              - id: 6045
+                name: XXX/UHD
+                subCategories: []
+              - id: 6070
+                name: XXX/Other
+                subCategories: []
+          - id: 8000
+            name: Other
+            subCategories: []
+          - id: 7000
+            name: Books
+            subCategories:
+              - id: 7020
+                name: Books/EBook
+                subCategories: []
+              - id: 7030
+                name: Books/Comics
+                subCategories: []
+              - id: 7050
+                name: Books/Other
+                subCategories: []
+        supportsRawSearch: false
+        searchParams:
+          - q
+          - q
+        tvSearchParams:
+          - q
+          - season
+          - ep
+        movieSearchParams:
+          - q
+        musicSearchParams:
+          - q
+        bookSearchParams:
+          - q
+      priority: 25
+      downloadClientId: 0
+      added: "0001-01-01T00:00:00Z"
+      sortName: pirate bay
+      name: The Pirate Bay
+      fields:
+        - name: definitionFile
+          value: thepiratebay
+        - name: baseUrl
+        - name: baseSettings.queryLimit
+        - name: baseSettings.grabLimit
+        - name: baseSettings.limitsUnit
+          value: 0
+        - name: torrentBaseSettings.appMinimumSeeders
+        - name: torrentBaseSettings.seedRatio
+        - name: torrentBaseSettings.seedTime
+        - name: torrentBaseSettings.packSeedTime
+        - name: torrentBaseSettings.preferMagnetUrl
+          value: false
+        - name: uploader
+        - name: info_uploader
+          value: 'You can filter by Uploader by entering a Case Sensitive username, or leave empty to get all results.<br>Note: this is the username of the Uploader and not the Groupname that often show up at the end of TPB titles, eg -MeGusta.'
+        - name: info_api
+          value: This indexer uses the API at https://apibay.org/ to get its official TPB data. Choose any site link that you can access/prefer so that you can view the torrent details page when browsing the search results for this indexer.
+      implementationName: Cardigann
+      implementation: Cardigann
+      configContract: CardigannSettings
+      infoLink: https://wiki.servarr.com/prowlarr/supported-indexers#thepiratebay
       tags: []
 
 # -- For tracking purpose, not used - replaced with pre-existing cluster issuer
@@ -523,7 +1029,8 @@ sonarr:
         containers:
           main:
             env:
-              SONARR__API_KEY: *apikey
+              SONARR__AUTH__METHOD: "External"
+              SONARR__AUTH__REQUIRED: "DisabledForLocalAddresses"
   # @ignore
   ingress:
     # @ignore
@@ -597,7 +1104,8 @@ radarr:
         containers:
           main:
             env:
-              RADARR__API_KEY: *apikey
+              RADARR__AUTH__METHOD: "External"
+              RADARR__AUTH__REQUIRED: "DisabledForLocalAddresses"
   # @ignore
   ingress:
     # @ignore
@@ -623,6 +1131,70 @@ radarr:
           enabled: false
         traefik:
           enabled: false
+  persistence:
+    config:
+      enabled: true
+      type: pvc
+      size: 500Mi
+      accessModes: ReadWriteMany
+      storageClass: *storageClassName
+      targetSelector:
+        main:
+          main:
+            mountPath: /config
+        exportarr:
+          exportarr:
+            mountPath: /config
+            readOnly: true
+    media:
+      enabled: true
+      type: pvc
+      existingClaim: *media-volume
+      targetSelector:
+        main:
+          main:
+            mountPath: /mnt/media
+    downloads:
+      enabled: true
+      type: pvc
+      existingClaim: *downloads-volume
+      targetSelector:
+        main:
+          main:
+            mountPath: /mnt/downloads
+
+# @ignore
+bazarr:
+  # @ignore
+  metrics:
+    main:
+      enabled: *metricsEnabled
+  # @ignore
+  ingress:
+    # @ignore
+    bazarr-ing:
+      enabled: true
+      primary: true
+      required: true
+      expandObjectName: false
+      annotations:
+        cert-manager.io/cluster-issuer: *issuer
+      ingressClassName: *ingressClassName
+      hosts:
+        - host: bazarr.local
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - bazarr.local
+          secretName: bazarr-tls
+      integrations:
+        certManager:
+          enabled: false
+        traefik:
+          enabled: false
+  # @ignore
   persistence:
     config:
       enabled: true
@@ -743,6 +1315,58 @@ jellyfin:
         main:
           main:
             mountPath: /mnt/media
+  # -- Controls the optional Jellyfin transcoder bootstrap configuration. Toggled via `persistence.transcode.enabled`.
+  # @section -- Jellyfin
+  transcoder:
+    # -- Body of the Jellyfin transcoder API request.
+    body:
+      EncodingThreadCount: -1
+      EnableFallbackFont: false
+      EnableAudioVbr: false
+      DownMixAudioBoost: 2
+      DownMixStereoAlgorithm: "None"
+      MaxMuxingQueueSize: 2048
+      EnableThrottling: false
+      ThrottleDelaySeconds: 180
+      EnableSegmentDeletion: false
+      SegmentKeepSeconds: 720
+      HardwareAccelerationType: "vaapi"
+      EncoderAppPathDisplay: "/usr/lib/jellyfin-ffmpeg/ffmpeg"
+      VaapiDevice: "/dev/dri/renderD128"
+      QsvDevice: ""
+      EnableTonemapping: false
+      EnableVppTonemapping: false
+      EnableVideoToolboxTonemapping: false
+      TonemappingAlgorithm: "bt2390"
+      TonemappingMode: "auto"
+      TonemappingRange: "auto"
+      TonemappingDesat: 0
+      TonemappingPeak: 100
+      TonemappingParam: 0
+      VppTonemappingBrightness: 16
+      VppTonemappingContrast: 1
+      H264Crf: 23
+      H265Crf: 28
+      DeinterlaceDoubleRate: false
+      DeinterlaceMethod: "yadif"
+      EnableDecodingColorDepth10Hevc: true
+      EnableDecodingColorDepth10Vp9: false
+      EnableDecodingColorDepth10HevcRext: false
+      EnableDecodingColorDepth12HevcRext: false
+      EnableEnhancedNvdecDecoder: true
+      PreferSystemNativeHwDecoder: true
+      EnableIntelLowPowerH264HwEncoder: false
+      EnableIntelLowPowerHevcHwEncoder: false
+      EnableHardwareEncoding: true
+      AllowHevcEncoding: false
+      AllowAv1Encoding: false
+      EnableSubtitleExtraction: true
+      HardwareDecodingCodecs:
+        - "h264"
+        - "hevc"
+      AllowOnDemandMetadataBasedKeyframeExtractionForExtensions:
+        - "mkv"
+      TranscodingTempPath: "/config/transcodes" # mounted as a volume
 
 # @ignore
 jellyseerr:
@@ -846,7 +1470,7 @@ qbittorrent:
         containers:
           main:
             env:
-              QBITTORRENT__USE_PROFILE: true
+              QBITTORRENT__USE_PROFILE: false
   # @ignore
   ingress:
     qbittorrent-ing:
@@ -905,7 +1529,8 @@ prowlarr:
         containers:
           main:
             env:
-              PROWLARR__API_KEY: *apikey
+              PROWLARR__AUTH__METHOD: "External"
+              PROWLARR__AUTH__REQUIRED: "DisabledForLocalAddresses"
   ingress:
     prowlarr-ing:
       enabled: true
