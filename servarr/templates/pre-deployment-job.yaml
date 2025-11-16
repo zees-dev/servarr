@@ -6,7 +6,7 @@ metadata:
     release: "{{ .Release.Name }}"
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
   annotations:
-    "helm.sh/hook": pre-install
+    "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-delete-policy": before-hook-creation
     "helm.sh/hook-weight": "-3"
 spec:
@@ -20,7 +20,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: qbt-config-injector
-          image: dinutac/jinja2docker:2.1.8
+          image: python:3.11-alpine
           imagePullPolicy: IfNotPresent
           env:
             - name: TORRENT_USERNAME
@@ -31,10 +31,10 @@ spec:
             - "/bin/sh"
             - "-ec"
           args:
-            - "python3 -u /tmp/init-qbittorrent.py 2>&1;"
+            - "python3 -m pip install --no-cache-dir Jinja2 >/dev/null 2>&1 && python3 -u /tmp/init-qbittorrent.py 2>&1;"
           volumeMounts:
             - name: torrent-config-volume
-              mountPath: /mnt
+              mountPath: /config
             - name: init-script
               mountPath: /tmp/init-qbittorrent.py
               subPath: init-qbittorrent.py 
@@ -46,6 +46,3 @@ spec:
         configMap:
           name: init-qbittorrent-python-script
           defaultMode: 0644
-          # items:
-          # - key: qBittorrent.conf
-          #   path: qBittorrent.conf

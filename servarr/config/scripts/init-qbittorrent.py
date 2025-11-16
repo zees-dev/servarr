@@ -9,7 +9,7 @@ import jinja2
 
 MIN_PASS_LEN = 8
 QBITTORRENT_CONF_FILENAME = "qBittorrent.conf"
-QBITTORRENT_CONF_FILEPATH = "/mnt/qBittorrent/config"
+QBITTORRENT_CONF_FILEPATH = "/config/qBittorrent"
 QBITTORRENT_CONF_TEMPLATE = r"""
 [Application]
 FileLogger\Age=1
@@ -25,7 +25,15 @@ Session\DefaultSavePath=/downloads
 Session\ExcludedFileNames=
 Session\Port=50413
 Session\QueueingSystemEnabled=true
-Session\TempPath=/downloads/temp
+Session\TempPath=/downloads/incomplete/
+Session\TempPathEnabled=true
+Session\GlobalMaxRatio=0
+Session\GlobalMaxRatioEnabled=true
+Session\MaxRatioAction=0
+Session\GlobalMaxSeedingMinutes=0
+Session\GlobalMaxSeedingMinutesEnabled=true
+Session\DisableAutoTMM=false
+Session\AutoTMMEnabled=true
 
 [Core]
 AutoDeleteAddedTorrentFile=Never
@@ -90,8 +98,8 @@ log_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(messa
 console_handler.setFormatter(log_format)
 logger.addHandler(console_handler)
 
-TORRENT_USERNAME = os.getenv("TORRENT_USERNAME", "admin")
-TORRENT_PASSWORD = os.getenv("TORRENT_PASSWORD", "password")
+TORRENT_USERNAME = os.getenv("TORRENT_USERNAME")
+TORRENT_PASSWORD = os.getenv("TORRENT_PASSWORD")
 
 logger.info("qBitTorrent Init Job started")
 logger.info("The Job will configure qBitTorrent credentials")
@@ -147,17 +155,22 @@ if not os.path.exists(QBITTORRENT_CONF_FILEPATH):
 
 logger.info("Saving file to PVC")
 try:
-    create_file(conf_rendered)
+    conf_file_path = create_file(conf_rendered)
 except Exception:
     logger.exception("Could not create file")
     sys.exit(1)
 
 logger.info("Setting permissions on files and folders")
-
 try:
     # Not the pythonic way, but the simplest
-    os.system("chown -R 568:568 /mnt/")
-    os.system("chmod 0644 /mnt/qBittorrent/config/qBittorrent.conf")
+    volume_root = os.path.dirname(QBITTORRENT_CONF_FILEPATH)
+    command = f"chown -R 568:568 {volume_root}"
+    logger.info(f"Running command: {command}")
+    os.system(command)
+
+    command = f"chmod 0644 {conf_file_path}"
+    logger.info(f"Running command: {command}")
+    os.system(command)
 except Exception:
     logger.exception("Error while setting permissions")
     sys.exit(1)
