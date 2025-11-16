@@ -9,6 +9,7 @@ keywords:
   - prowlarr
   - radarr
   - sonarr
+  - bazarr
   - qbittorrent
   - jellyseerr
   - jellyfin
@@ -18,25 +19,28 @@ sources:
   - https://github.com/zees-dev/servarr
 dependencies:
   - name: sonarr
-    version: "21.2.1"
+    version: "25.0.1"
     repository: "oci://tccr.io/truecharts"
   - name: radarr
-    version: "21.2.1"
+    version: "26.0.0"
+    repository: "oci://tccr.io/truecharts"
+  - name: bazarr
+    version: "23.0.0"
     repository: "oci://tccr.io/truecharts"
   - name: prowlarr
-    version: "16.2.1"
+    version: "21.0.0"
     repository: "oci://tccr.io/truecharts"
   - name: qbittorrent
-    version: "19.4.1"
+    version: "24.0.0"
     repository: "oci://tccr.io/truecharts"
   - name: jellyseerr
-    version: "9.5.2"
+    version: "13.11.3"
     repository: "oci://tccr.io/truecharts"
   - name: jellyfin
-    version: "18.7.7"
+    version: "21.12.6"
     repository: "oci://tccr.io/truecharts"
   - name: flaresolverr
-    version: "13.4.1"
+    version: "16.12.5"
     repository: "oci://tccr.io/truecharts"
 
 maintainers:
