@@ -1436,6 +1436,68 @@ jellyseerr:
           main:
             mountPath: /mnt/media
 
+# @ignore
+homarr:
+  metrics:
+    main:
+      enabled: *metricsEnabled
+  ingress:
+    homarr-ing:
+      enabled: true
+      primary: true
+      required: true
+      expandObjectName: false
+      annotations:
+        cert-manager.io/cluster-issuer: *issuer
+      ingressClassName: *ingressClassName
+      hosts:
+        - host: homarr.local
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - homarr.local
+          secretName: homarr-tls
+      integrations:
+        certManager:
+          enabled: false
+        traefik:
+          enabled: false
+  persistence:
+    config:
+      enabled: true
+      type: pvc
+      size: 250Mi
+      accessModes: ReadWriteMany
+      storageClass: *storageClassName
+      targetSelector:
+        main:
+          main:
+            mountPath: /app/data/configs
+    icons:
+      enabled: true
+      type: pvc
+      size: 100Mi
+      accessModes: ReadWriteMany
+      storageClass: *storageClassName
+      targetSelector:
+        main:
+          main:
+            mountPath: /app/public/icons
+    data:
+      enabled: true
+      type: pvc
+      size: 250Mi
+      accessModes: ReadWriteMany
+      storageClass: *storageClassName
+      targetSelector:
+        main:
+          main:
+            mountPath: /data
+  addons:
+    vpn: null
+
 qbittorrent:
   # -- Whether to enable or disable CSRF Protection on qBitTorrent WebGUI
   # @section -- Torrent

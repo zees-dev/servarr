@@ -27,6 +27,13 @@ data:
 {{ ( tpl (.Files.Glob "config/scripts/init-sonarr.py" ).AsConfig . ) | indent 2 }}
 ---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: init-homarr-script
+data:
+{{ ( tpl (.Files.Glob "config/scripts/init-homarr.py").AsConfig . ) | indent 2 }}
+---
+apiVersion: v1
 kind: ConfigMap 
 metadata:
   name: init-prowlarr-script
