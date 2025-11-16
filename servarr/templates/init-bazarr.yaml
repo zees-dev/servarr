@@ -1,0 +1,96 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bazarr-init
+  labels:
+    release: "{{ .Release.Name }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-weight": "20"
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: "{{ .Release.Name }}-bazarr-finalizer"
+      labels:
+        app: "{{ .Release.Name }}"
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: wait-for-bazarr
+          image: curlimages/curl:8.7.1
+          imagePullPolicy: IfNotPresent
+          command:
+            [
+              "sh",
+              "-c",
+              "until curl  \"http://{{ .Release.Name }}-bazarr.{{ .Release.Namespace }}.svc.cluster.local:6767\"; do echo waiting for servarr-bazarr; sleep 5; done;",
+            ]
+        - name: wait-for-sonarr
+          image: curlimages/curl:8.7.1
+          imagePullPolicy: IfNotPresent
+          command:
+            [
+              "sh",
+              "-c",
+              "until curl  \"http://{{ .Release.Name }}-sonarr.{{ .Release.Namespace }}.svc.cluster.local:8989\"; do echo waiting for servarr-sonarr; sleep 5; done;",
+            ]
+        - name: wait-for-radarr
+          image: curlimages/curl:8.7.1
+          imagePullPolicy: IfNotPresent
+          command:
+            [
+              "sh",
+              "-c",
+              "until curl  \"http://{{ .Release.Name }}-radarr.{{ .Release.Namespace }}.svc.cluster.local:7878\"; do echo waiting for servarr-radarr; sleep 5; done;",
+            ]
+      containers:
+      - name: initialize-bazarr
+        image: "python:3.11-alpine"
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: PYTHONUNBUFFERED
+            value: "1"
+          - name: BAZARR_HOST
+            value: "{{ .Release.Name }}-bazarr.{{ .Release.Namespace }}.svc.cluster.local:6767"
+          - name: BAZARR_CONFIG_PATH
+            value: "/bazarr-config/config/config.yaml"
+          - name: RADARR_CONFIG_PATH
+            value: "/radarr-config/config.xml"
+          - name: RADARR_SERVICE
+            value: "{{ .Release.Name }}-radarr.{{ .Release.Namespace }}.svc.cluster.local"
+          - name: SONARR_CONFIG_PATH
+            value: "/sonarr-config/config.xml"
+          - name: SONARR_SERVICE
+            value: "{{ .Release.Name }}-sonarr.{{ .Release.Namespace }}.svc.cluster.local"
+        command:
+          - "/bin/sh"
+          - "-ec"
+        args:
+          - "python3 -m pip install --no-cache-dir requests pyyaml >/dev/null 2>&1 && python3 -u /mnt/init-bazarr.py 2>&1;"
+        volumeMounts:
+          - mountPath: "/mnt"
+            name: python-script
+          - mountPath: "/bazarr-config"
+            name: bazarr-config
+          - mountPath: "/radarr-config"
+            name: radarr-config
+            readOnly: true
+          - mountPath: "/sonarr-config"
+            name: sonarr-config
+            readOnly: true
+      volumes:
+        - name: python-script
+          configMap:
+            name: init-bazarr-script
+        - name: bazarr-config
+          persistentVolumeClaim:
+            claimName: {{ printf "%s-bazarr-config" .Release.Name }}
+        - name: radarr-config
+          persistentVolumeClaim:
+            claimName: {{ printf "%s-radarr-config" .Release.Name }}
+        - name: sonarr-config
+          persistentVolumeClaim:
+            claimName: {{ printf "%s-sonarr-config" .Release.Name }}
