@@ -7,7 +7,7 @@ metadata:
     release: "{{ .Release.Name }}"
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
   annotations:
-    "helm.sh/hook": post-install
+    "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-delete-policy": before-hook-creation
     "helm.sh/hook-weight": "40"
 spec:
@@ -21,7 +21,7 @@ spec:
       restartPolicy: Never
       initContainers:
         - name: wait-for-jellyseerr
-          image: rapidfort/curl:8.7.1
+          image: curlimages/curl:8.7.1
           imagePullPolicy: IfNotPresent
           command:
             - "sh"
@@ -29,27 +29,31 @@ spec:
             - "until curl \"http://{{ .Release.Name }}-jellyseerr.{{ .Release.Namespace }}.svc.cluster.local:10241\"; do echo waiting for servarr-jellyseerr; sleep 5; done;sleep 10;"
       containers:
       - name: initialize-jellyseer
-        image: "nyurik/alpine-python3-requests"
+        image: "python:3.11-alpine"
         imagePullPolicy: IfNotPresent
         env:
           - name: PYTHONUNBUFFERED
             value: "1"
+          - name: JELLYSEERR_SETTINGS_PATH
+            value: "/app/config/settings.json"
           - name: JELLYSEERR_HOST
-            value: "{{ .Release.Name }}-jellyseerr.{{ .Release.Namespace }}.svc.cluster.local"
-          - name: JELLYSEERR_PORT
-            value: "10241"
+            value: "{{ .Release.Name }}-jellyseerr.{{ .Release.Namespace }}.svc.cluster.local:10241"
           - name: JELLYFIN_HOST
-            value: "{{ .Release.Name }}-jellyfin"
-          - name: JELLYFIN_PORT
-            value: "8096"
+            value: "{{ .Release.Name }}-jellyfin.{{ .Release.Namespace }}.svc.cluster.local:8096"
           - name: JELLYFIN_USERNAME
             value: "{{ $.Values.dash.username }}"
           - name: JELLYFIN_PASSWORD
             value: "{{ $.Values.dash.password }}"
           - name: JELLYFIN_EMAIL
             value: "{{ $.Values.dash.mail }}"
-          - name: API_KEY
-            value: "{{ $.Values.global.apikey }}"
+          - name: RADARR_CONFIG_PATH
+            value: "/radarr-config/config.xml"
+          - name: RADARR_HOST
+            value: "{{ .Release.Name }}-radarr.{{ .Release.Namespace }}.svc.cluster.local:7878"
+          - name: SONARR_CONFIG_PATH
+            value: "/sonarr-config/config.xml"
+          - name: SONARR_HOST
+            value: "{{ .Release.Name }}-sonarr.{{ .Release.Namespace }}.svc.cluster.local:8989"
           - name: TELEGRAM_NOTIFICATION_ENABLED
             value: "{{ $.Values.notifications.telegram.enabled }}"
           - name: TELEGRAM_CHAT_ID
@@ -60,13 +64,31 @@ spec:
           - "/bin/sh"
           - "-ec"
         args:
-          - "python3 -u /mnt/init-jellyseerr.py 2>&1;"
+          - "python3 -m pip install --no-cache-dir requests >/dev/null 2>&1 && python3 -u /mnt/init-jellyseerr.py 2>&1;"
         volumeMounts:
           - mountPath: "/mnt"
             name: python-script
+          - mountPath: "/sonarr-config"
+            name: sonarr-config
+            readOnly: true
+          - mountPath: "/radarr-config"
+            name: radarr-config
+            readOnly: true
+          - mountPath: "/app/config"
+            name: jellyseerr-config
+            readOnly: true
       volumes:
         - name: python-script
           configMap:
             name: init-jellyseerr-python-scripts
+        - name: sonarr-config
+          persistentVolumeClaim:
+            claimName: {{ printf "%s-sonarr-config" .Release.Name }}
+        - name: radarr-config
+          persistentVolumeClaim:
+            claimName: {{ printf "%s-radarr-config" .Release.Name }}
+        - name: jellyseerr-config
+          persistentVolumeClaim:
+            claimName: {{ printf "%s-jellyseerr-config" .Release.Name }}
 
 {{- end }}
