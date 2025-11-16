@@ -2,7 +2,7 @@
 
 
 
-![Version: 1.0.2](https://img.shields.io/badge/Version-1.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.2](https://img.shields.io/badge/AppVersion-1.0.2-informational?style=flat-square) 
+![Version: 1.1.0](https://img.shields.io/badge/Version-1.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.1.0](https://img.shields.io/badge/AppVersion-1.1.0-informational?style=flat-square) 
 
 Servarr complete Helm Chart for Kubernetes
 
@@ -22,14 +22,15 @@ Servarr complete Helm Chart for Kubernetes
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://tccr.io/truecharts | sonarr | 25.0.1 |
-| oci://tccr.io/truecharts | radarr | 26.0.0 |
 | oci://tccr.io/truecharts | bazarr | 23.0.0 |
+| oci://tccr.io/truecharts | flaresolverr | 16.12.5 |
+| oci://tccr.io/truecharts | homarr | 11.0.0 |
+| oci://tccr.io/truecharts | jellyfin | 21.12.6 |
+| oci://tccr.io/truecharts | jellyseerr | 13.11.3 |
 | oci://tccr.io/truecharts | prowlarr | 21.0.0 |
 | oci://tccr.io/truecharts | qbittorrent | 24.0.0 |
-| oci://tccr.io/truecharts | jellyseerr | 13.11.3 |
-| oci://tccr.io/truecharts | jellyfin | 21.12.6 |
-| oci://tccr.io/truecharts | flaresolverr | 16.12.5 |
+| oci://tccr.io/truecharts | radarr | 26.0.0 |
+| oci://tccr.io/truecharts | sonarr | 25.0.1 |
 
 ---
 
@@ -211,6 +212,32 @@ jellyseerr:
     media:
       existingClaim: *media-volume
 
+homarr:
+  metrics:
+    main:
+      enabled: *metricsEnabled
+  ingress:
+    homarr-ing:
+      annotations:
+        cert-manager.io/cluster-issuer: *issuer
+      ingressClassName: *ingressClassName
+      hosts:
+        - host: homarr.local
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - homarr.local
+          secretName: homarr-tls
+  persistence:
+    config:
+      storageClass: *storageClassName
+    icons:
+      storageClass: *storageClassName
+    data:
+      storageClass: *storageClassName
+
 qbittorrent:
   metrics:
     main:
@@ -279,73 +306,33 @@ flaresolverr:
 
 ## Values
 
-### Jellyfin
-
-Jellyfin setup now reuses the shared global credentials (`global.username`, `global.password`, `global.mail`, `global.countryCode`, `global.preferredLanguage`).
-
-### Global
-
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| global.certManagerClusterIssuer | string | No default value, leave empty if not required | Insert your cert manager cluster issuer, e.g.: letsencrypt-cloudflare. Do not remove the `&issuer` anchor! |
-| global.ingressClassName | string | nginx | Insert your ingress class here, e.g.: &ingressClassName nginx. Do not remove the `&ingressCassName` anchor, and do not leave the anchor value empty, otherwise you will face a `null` value error! |
-| global.storageClassName | string | `"network-block"` | Insert your storage class here, e.g.: &storageClassName network-block. Do not remove the `&storageClassName` anchor! |
-| global.username | string | No default value | Insert the shared Servarr username (used for Jellyfin, Jellyseerr, and qBitTorrent admin) |
-| global.password | string | No default value | Insert the shared Servarr password (used for Jellyfin, Jellyseerr, and qBitTorrent admin) |
-| global.mail | string | No default value | Insert Jellyfin login mail (also used for Jellyseerr integration) |
-| global.countryCode | string | US | Insert the Jellyfin country code |
-| global.preferredLanguage | string | en | Insert the Jellyfin preferred language |
-
-### Prowlarr
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| indexers | list | The body of the 1337x index is provided as default | The indexers list. Each element of the list is the yaml-formatted body of the [Prowlarr API request](https://prowlarr.com/docs/api/#/Indexer/post_api_v1_indexer) to add that index. |
-
-### Issuer
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| issuer | object | See the sub fields | For tracking purpose, not used - replaced with pre-existing cluster issuer |
-| issuer.cloudFlareKey | string | `nil` | Insert your CloudFlare key |
-| issuer.email | string | `nil` | Insert your email address |
-
-### Metrics
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| metrics.enabled | bool | `false` | Anchor to set wether to deploy the export sidecar pods or not. Requires the Prometheus stack. Do not remove the `&metricsEnabled` anchor! |
-
-### Jellyseerr
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| notifications.telegram.bot_apitoken | string | No default value | Insert your Telegram Bot API token |
-| notifications.telegram.chat_id | string | No default value | Insert the Telegram Chat id, check @get_id_bot for this |
-| notifications.telegram.enabled | bool | `true` | Enable the Telegram notifications |
-
-### Torrent
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| qbittorrent.csrf_protection | bool | false | Whether to enable or disable CSRF Protection on qBitTorrent WebGUI |
-
-qBitTorrent admin credentials reuse the shared values under `global.username` and `global.password`.
-
-### Storage
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| volumes.downloads | object | See the sub fields | configuration of the volume used for torrent downloads |
-| volumes.downloads.name | string | `"downloads-volume"` | Name of the download pvc. Do not remove the `&downloads-volume` anchor! |
-| volumes.downloads.size | string | `"100Gi"` | Size of the downloads volume, in Kubernets format |
-| volumes.media | object | See the sub fields | configuration of the volume used for media storage (i.e.: where movies and tv shows file will be permanently stored) |
-| volumes.media.name | string | `"media-volume"` | Name of the media pvc. Do not remove the `&media-volume` anchor! |
-| volumes.media.size | string | `"250Gi"` | Size of the media volume, in Kubernets format |
-| volumes.torrentConfig | object | See the sub fields | configuration of the volume used for qBitTorrent internal configuration |
-| volumes.torrentConfig.name | string | `"torrent-config"` | Name of the torrent configuration pvc. Do not remove the `&torrentConfig` anchor! |
-| volumes.torrentConfig.size | string | `"250Mi"` | Size of the torrent configuration volume, in Kubernets format |
+| global.certManagerClusterIssuer | string | No default value, leave empty if not required | Insert your cert manager cluster issuer, e.g.: letsencrypt-cloudflare. Do not remove the `&issuer` anchor! @section -- Global |
+| global.countryCode | string | US | Insert the Jellyfin country code @section -- Global |
+| global.ingressClassName | string | nginx | Insert your ingress class here, e.g.: &ingressClassName nginx. Do not remove the `&ingressCassName` anchor, and do not leave the anchor value empty, otherwise you will face a `null` value error! @section -- Global |
+| global.mail | string | `nil` | Insert Jellyfin login mail (also used for Jellyseerr integration) @section -- Global |
+| global.password | string | `nil` | Insert the shared Servarr password (used for Jellyfin, Jellyseerr, and qBitTorrent admin) @section -- Global |
+| global.preferredLanguage | string | en | Insert the Jellyfin preferred language @section -- Global |
+| global.storageClassName | string | `"network-block"` | Insert your storage class here, e.g.: &storageClassName network-block. Do not remove the `&storageClassName` anchor! @section -- Global |
+| global.username | string | `nil` | Insert the shared Servarr username (used for Jellyfin, Jellyseerr, and qBitTorrent admin) @section -- Global |
+| indexers | list | The body of the 1337x index is provided as default | The indexers list. Each element of the list is the yaml-formatted body of the [Prowlarr API request](https://prowlarr.com/docs/api/#/Indexer/post_api_v1_indexer) to add that index. @section -- Prowlarr |
+| issuer | object | See the sub fields | For tracking purpose, not used - replaced with pre-existing cluster issuer @section -- Issuer |
+| issuer.cloudFlareKey | string | `nil` | Insert your CloudFlare key @section -- Issuer |
+| issuer.email | string | `nil` | Insert your email address @section -- Issuer |
+| metrics.enabled | bool | `false` | Anchor to set wether to deploy the export sidecar pods or not. Requires the Prometheus stack. Do not remove the `&metricsEnabled` anchor! @section -- Metrics |
+| notifications.telegram.bot_apitoken | string | No default value | Insert your Telegram Bot API token @section -- Jellyseerr |
+| notifications.telegram.chat_id | string | No default value | Insert the Telegram Chat id, check @get_id_bot for this @section -- Jellyseerr |
+| notifications.telegram.enabled | bool | `true` | Enable the Telegram notifications @section -- Jellyseerr |
+| qbittorrent.csrf_protection | bool | false | Whether to enable or disable CSRF Protection on qBitTorrent WebGUI @section -- Torrent |
+| volumes.downloads | object | See the sub fields | configuration of the volume used for torrent downloads @section -- Storage |
+| volumes.downloads.name | string | `"downloads-volume"` | Name of the download pvc. Do not remove the `&downloads-volume` anchor! @section -- Storage |
+| volumes.downloads.size | string | `"100Gi"` | Size of the downloads volume, in Kubernets format @section -- Storage |
+| volumes.media | object | See the sub fields | configuration of the volume used for media storage (i.e.: where movies and tv shows file will be permanently stored) @section -- Storage |
+| volumes.media.name | string | `"media-volume"` | Name of the media pvc. Do not remove the `&media-volume` anchor! @section -- Storage |
+| volumes.media.size | string | `"250Gi"` | Size of the media volume, in Kubernets format @section -- Storage |
+| volumes.torrentConfig | object | See the sub fields | configuration of the volume used for qBitTorrent internal configuration @section -- Storage |
+| volumes.torrentConfig.name | string | `"torrent-config"` | Name of the torrent configuration pvc. Do not remove the `&torrentConfig` anchor! @section -- Storage |
+| volumes.torrentConfig.size | string | `"250Mi"` | Size of the torrent configuration volume, in Kubernets format @section -- Storage |
 
 
-----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
