@@ -16,9 +16,6 @@ metrics:
   # @section -- Metrics
   enabled: &metricsEnabled false
 
-# @ignore
-initJellyseerr: true
-
 notifications:
   telegram:
     # -- Enable the Telegram notifications
