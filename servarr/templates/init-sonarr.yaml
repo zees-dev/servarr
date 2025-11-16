@@ -6,7 +6,7 @@ metadata:
     release: "{{ .Release.Name }}"
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
   annotations:
-    "helm.sh/hook": post-install
+    "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-delete-policy": before-hook-creation
     "helm.sh/hook-weight": "10"
 spec:
@@ -20,7 +20,7 @@ spec:
       restartPolicy: Never
       initContainers:
         - name: wait-for-sonarr
-          image: rapidfort/curl:8.7.1
+          image: curlimages/curl:8.7.1
           imagePullPolicy: IfNotPresent
           command:
             [
@@ -30,15 +30,15 @@ spec:
             ]
       containers:
       - name: initialize-sonarr
-        image: "nyurik/alpine-python3-requests"
+        image: "python:3.11-alpine"
         imagePullPolicy: IfNotPresent
         env:
           - name: PYTHONUNBUFFERED
             value: "1"
           - name: SONARR_HOST
             value: "{{ .Release.Name }}-sonarr.{{ .Release.Namespace }}.svc.cluster.local:8989"
-          - name: API_KEY
-            value: "{{ $.Values.global.apikey }}"
+          - name: SONARR_CONFIG_PATH
+            value: "/config/config.xml"
           - name: TORRENT_SERVICE
             value: "{{ .Release.Name }}-qbittorrent"
           - name: TORRENT_ADMIN
@@ -49,11 +49,16 @@ spec:
           - "/bin/sh"
           - "-ec"
         args:
-          - "python3 -u /mnt/init-sonarr.py 2>&1;"
+          - "python3 -m pip install --no-cache-dir requests >/dev/null 2>&1 && python3 -u /mnt/init-sonarr.py 2>&1;"
         volumeMounts:
           - mountPath: "/mnt"
             name: python-script
+          - mountPath: "/config"
+            name: sonarr-config
       volumes:
         - name: python-script
           configMap:
             name: init-sonarr-script
+        - name: sonarr-config
+          persistentVolumeClaim:
+            claimName: {{ printf "%s-sonarr-config" .Release.Name }}
