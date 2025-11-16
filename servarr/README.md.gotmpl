@@ -32,20 +32,14 @@ global:
   storageClassName: &storageClassName "<replace-with-your-storage-class-name>"
   ingressClassName: &ingressClassName "<replace-with-your-ingress-class-name>"
   certManagerClusterIssuer: &issuer
-
-metrics:
-  enabled: &metricsEnabled false
-
-dash:
   username:
   password:
   mail:
   countryCode: "US"
   preferredLanguage: "en"
 
-torrent:
-  username:
-  password:
+metrics:
+  enabled: &metricsEnabled false
 
 volumes:
   storageClass: *storageClassName

@@ -38,13 +38,13 @@ spec:
           - name: JELLYFIN_HOST
             value: "{{ .Release.Name }}-jellyfin.{{ .Release.Namespace }}.svc.cluster.local:8096"
           - name: JELLYFIN_USERNAME
-            value: "{{ $.Values.dash.username }}"
+            value: "{{ $.Values.global.username }}"
           - name: JELLYFIN_PASSWORD
-            value: "{{ $.Values.dash.password }}"
+            value: "{{ $.Values.global.password }}"
           - name: COUNTRY_CODE
-            value: "{{ $.Values.dash.countryCode }}"
+            value: "{{ $.Values.global.countryCode }}"
           - name: PREFERRED_LANGUAGE
-            value: "{{ $.Values.dash.preferredLanguage }}"
+            value: "{{ $.Values.global.preferredLanguage }}"
           - name: JELLYFIN_TRANSCODER_ENABLED
             value: {{ default false $.Values.jellyfin.persistence.transcode.enabled | quote }}
           - name: JELLYFIN_TRANSCODER_BODY_FILE

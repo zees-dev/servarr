@@ -3,27 +3,20 @@ global:
   storageClassName: &storageClassName "longhorn"
   ingressClassName: &ingressClassName "nginx"
   certManagerClusterIssuer: &issuer "letsencrypt-cloudflare"
-
-metrics:
-  enabled: &metricsEnabled false
-
-initJellyseerr: true
-notifications:
-  telegram:
-    enabled: false
-    chat_id: ""
-    bot_apitoken: ""
-
-dash:
   username: admin
   password: str0ngP4ssw0rd.
   mail: admin@gmail.com
   countryCode: "US"
   preferredLanguage: "en"
 
-torrent:
-  username: admin
-  password: str0ngP455
+metrics:
+  enabled: &metricsEnabled false
+
+notifications:
+  telegram:
+    enabled: false
+    chat_id: ""
+    bot_apitoken: ""
 
 indexers:
 - name: 1337x

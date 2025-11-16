@@ -42,9 +42,9 @@ spec:
           - name: TORRENT_SERVICE
             value: "{{ .Release.Name }}-qbittorrent"
           - name: TORRENT_ADMIN
-            value: "{{ $.Values.torrent.username }}"
+            value: "{{ $.Values.global.username }}"
           - name: TORRENT_PASSWORD
-            value: "{{ $.Values.torrent.password }}"
+            value: "{{ $.Values.global.password }}"
         command:
           - "/bin/sh"
           - "-ec"
