@@ -344,7 +344,6 @@ else:
         logger.error("There was an error while setting Flaresolverr indexer proxy!")
         sys.exit(1)
 
-logger.info("Setting Prowlarr indexers")
 indexersFile = "/mnt/indexers.json"
 if os.path.isfile(indexersFile):
     logger.info("Setting Prowlarr indexers")

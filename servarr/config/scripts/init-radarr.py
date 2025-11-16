@@ -36,8 +36,19 @@ def load_api_key(path: str, label: str) -> str:
         logger.error("Unable to parse %s (%s): %s", label, path, exc)
     except ValueError as exc:
         logger.error("%s", exc)
-
     sys.exit(1)
+
+# Load API Keys
+logger.info("Loading Radarr API Key from %s", CONFIG_PATH)
+API_KEY = load_api_key(CONFIG_PATH, "Radarr")
+logger.info("Loaded Radarr API Key: %s", API_KEY)
+
+# common headers for all requests
+headers = {
+    "content-type": "application/json",
+    "x-api-key": API_KEY,
+    "x-requested-with": "XMLHttpRequest"
+}
 
 def _request(method: str, url: str, headers: dict, body: dict, acceptable_response=None, skip_message=None):
     logger.debug(" ".join([
@@ -46,21 +57,18 @@ def _request(method: str, url: str, headers: dict, body: dict, acceptable_respon
         ", ".join(f'{key}: {value}' for key,value in headers.items()),
         str(body)
     ]))
-
     response = requests.request(
         method=method.lower(),
         url=url,
         json=body,
         headers=headers
     )
-
     logger.debug(" ".join([
         "Status Code:",
         str(response.status_code),
         "Response body:",
         response.text
     ]))
-
     try:
         payload = response.json()
     except JSONDecodeError:
@@ -112,19 +120,6 @@ def configure_or_exit(description: str, url: str, body: dict, acceptable_respons
     except requests.HTTPError:
         logger.error("There was an error while %s!", description)
         sys.exit(1)
-
-
-# Load API Keys
-logger.info("Loading Radarr API Key from %s", CONFIG_PATH)
-API_KEY = load_api_key(CONFIG_PATH, "Radarr")
-logger.info("Loaded Radarr API Key: %s", API_KEY)
-
-# common headers for all requests
-headers = {
-    "content-type": "application/json",
-    "x-api-key": API_KEY,
-    "x-requested-with": "XMLHttpRequest"
-}
 
 logger.info("Setup qBitTorrent in Radarr")
 configure_or_exit(

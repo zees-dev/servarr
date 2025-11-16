@@ -39,6 +39,18 @@ def load_api_key(path: str, label: str) -> str:
 
     sys.exit(1)
 
+# Load API Keys
+logger.info("Loading Sonarr API Key from %s", CONFIG_PATH)
+API_KEY = load_api_key(CONFIG_PATH, "Sonarr")
+logger.info("Loaded Sonarr API Key: %s", API_KEY)
+
+# common headers for all requests
+headers = {
+    "content-type": "application/json",
+    "x-api-key": API_KEY,
+    "x-requested-with": "XMLHttpRequest"
+}
+
 def _request(method: str, url: str, body: dict, acceptable_response=None, skip_message=None):
     logger.debug(" ".join([
         method.upper(),
@@ -46,7 +58,6 @@ def _request(method: str, url: str, body: dict, acceptable_response=None, skip_m
         ", ".join(f'{key}: {value}' for key,value in headers.items()),
         str(body)
     ]))
-
     response = requests.request(
         method=method.lower(),
         url=url,
@@ -111,19 +122,6 @@ def configure_or_exit(description: str, url: str, body: dict, acceptable_respons
     except requests.HTTPError:
         logger.error("There was an error while %s!", description)
         sys.exit(1)
-
-
-# Load API Keys
-logger.info("Loading Sonarr API Key from %s", CONFIG_PATH)
-API_KEY = load_api_key(CONFIG_PATH, "Sonarr")
-logger.info("Loaded Sonarr API Key: %s", API_KEY)
-
-# common headers for all requests
-headers = {
-    "content-type": "application/json",
-    "x-api-key": API_KEY,
-    "x-requested-with": "XMLHttpRequest"
-}
 
 logger.info("Setup Sonarr and qBitTorrent interworking")
 configure_or_exit(
