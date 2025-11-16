@@ -22,13 +22,14 @@ Servarr complete Helm Chart for Kubernetes
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://tccr.io/truecharts | flaresolverr | 13.4.1 |
-| oci://tccr.io/truecharts | jellyfin | 18.7.7 |
-| oci://tccr.io/truecharts | jellyseerr | 9.5.2 |
-| oci://tccr.io/truecharts | prowlarr | 16.2.1 |
-| oci://tccr.io/truecharts | qbittorrent | 19.4.1 |
-| oci://tccr.io/truecharts | radarr | 21.2.1 |
-| oci://tccr.io/truecharts | sonarr | 21.2.1 |
+| oci://tccr.io/truecharts | sonarr | 25.0.1 |
+| oci://tccr.io/truecharts | radarr | 26.0.0 |
+| oci://tccr.io/truecharts | bazarr | 23.0.0 |
+| oci://tccr.io/truecharts | prowlarr | 21.0.0 |
+| oci://tccr.io/truecharts | qbittorrent | 24.0.0 |
+| oci://tccr.io/truecharts | jellyseerr | 13.11.3 |
+| oci://tccr.io/truecharts | jellyfin | 21.12.6 |
+| oci://tccr.io/truecharts | flaresolverr | 16.12.5 |
 
 ---
 
@@ -46,7 +47,6 @@ Servarr complete Helm Chart for Kubernetes
 
 ```yaml
 global:
-  apikey: &apikey "<replace-with-an-api-key>"
   storageClassName: &storageClassName "<replace-with-your-storage-class-name>"
   ingressClassName: &ingressClassName "<replace-with-your-ingress-class-name>"
   certManagerClusterIssuer: &issuer
@@ -135,6 +135,32 @@ radarr:
         - hosts:
             - radarr.local
           secretName: radarr-tls
+  persistence:
+    config:
+      storageClass: *storageClassName
+    media:
+      existingClaim: *media-volume
+    downloads:
+      existingClaim: *downloads-volume
+
+bazarr:
+  metrics:
+    main:
+      enabled: *metricsEnabled
+  ingress:
+    bazarr-ing:
+      annotations:
+        cert-manager.io/cluster-issuer: *issuer
+      ingressClassName: *ingressClassName
+      hosts:
+        - host: bazarr.local
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - bazarr.local
+          secretName: bazarr-tls
   persistence:
     config:
       storageClass: *storageClassName
@@ -273,7 +299,6 @@ flaresolverr:
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| global.apikey | string | No default value is configured for security reasons | Insert your Prowlarr, Sonarr, Radarr API key here (one to rule them all!). Do not remove the `&apikey` anchor! |
 | global.certManagerClusterIssuer | string | No default value, leave empty if not required | Insert your cert manager cluster issuer, e.g.: letsencrypt-cloudflare. Do not remove the `&issuer` anchor! |
 | global.ingressClassName | string | nginx | Insert your ingress class here, e.g.: &ingressClassName nginx. Do not remove the `&ingressCassName` anchor, and do not leave the anchor value empty, otherwise you will face a `null` value error! |
 | global.storageClassName | string | `"network-block"` | Insert your storage class here, e.g.: &storageClassName network-block. Do not remove the `&storageClassName` anchor! |

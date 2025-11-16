@@ -29,7 +29,6 @@
 
 ```yaml
 global:
-  apikey: &apikey "<replace-with-an-api-key>"
   storageClassName: &storageClassName "<replace-with-your-storage-class-name>"
   ingressClassName: &ingressClassName "<replace-with-your-ingress-class-name>"
   certManagerClusterIssuer: &issuer
@@ -118,6 +117,32 @@ radarr:
         - hosts:
             - radarr.local
           secretName: radarr-tls
+  persistence:
+    config:
+      storageClass: *storageClassName
+    media:
+      existingClaim: *media-volume
+    downloads:
+      existingClaim: *downloads-volume
+
+bazarr:
+  metrics:
+    main:
+      enabled: *metricsEnabled
+  ingress:
+    bazarr-ing:
+      annotations:
+        cert-manager.io/cluster-issuer: *issuer
+      ingressClassName: *ingressClassName
+      hosts:
+        - host: bazarr.local
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - bazarr.local
+          secretName: bazarr-tls
   persistence:
     config:
       storageClass: *storageClassName
