@@ -193,6 +193,32 @@ jellyseerr:
     media:
       existingClaim: *media-volume
 
+homarr:
+  metrics:
+    main:
+      enabled: *metricsEnabled
+  ingress:
+    homarr-ing:
+      annotations:
+        cert-manager.io/cluster-issuer: *issuer
+      ingressClassName: *ingressClassName
+      hosts:
+        - host: homarr.local
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - homarr.local
+          secretName: homarr-tls
+  persistence:
+    config:
+      storageClass: *storageClassName
+    icons:
+      storageClass: *storageClassName
+    data:
+      storageClass: *storageClassName
+
 qbittorrent:
   metrics:
     main:

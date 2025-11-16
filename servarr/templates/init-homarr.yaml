@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: homarr-init
+  labels:
+    release: "{{ .Release.Name }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-weight": "100"
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: "{{ .Release.Name }}-homarr-finalizer"
+      labels:
+        app: "{{ .Release.Name }}"
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: wait-for-homarr
+          image: curlimages/curl:8.7.1
+          imagePullPolicy: IfNotPresent
+          command:
+            [
+              "sh",
+              "-c",
+              "until curl \"http://{{ .Release.Name }}-homarr.{{ .Release.Namespace }}.svc.cluster.local:10245\"; do echo waiting for {{ .Release.Name }}-homarr; sleep 5; done;",
+            ]
+      containers:
+        - name: initialize-homarr
+          image: python:3.11-alpine
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: HOMARR_HOST
+              value: "{{ .Release.Name }}-homarr.{{ .Release.Namespace }}.svc.cluster.local:10245"
+            - name: HOMARR_USERNAME
+              value: "{{ $.Values.global.username }}"
+            - name: HOMARR_PASSWORD
+              value: "{{ $.Values.global.password }}"
+          command:
+            - "/bin/sh"
+            - "-ec"
+          args:
+            - "python3 -m pip install --no-cache-dir requests >/dev/null 2>&1 && python3 -u /mnt/init-homarr.py 2>&1;"
+          volumeMounts:
+            - mountPath: /mnt
+              name: python-script
+      volumes:
+        - name: python-script
+          configMap:
+            name: init-homarr-script
