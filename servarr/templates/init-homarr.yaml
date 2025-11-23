@@ -41,6 +41,10 @@ spec:
               value: "{{ $.Values.global.username }}"
             - name: HOMARR_PASSWORD
               value: "{{ $.Values.global.password }}"
+{{- if .Values.homarr.config }}
+            - name: HOMARR_CONFIG_PATH
+              value: "/mnt/homarr-config.json"
+{{- end }}
           command:
             - "/bin/sh"
             - "-ec"

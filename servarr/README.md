@@ -6,17 +6,17 @@
 
 Servarr complete Helm Chart for Kubernetes
 
-**Homepage:** <https://github.com/zees-dev/servarr>
+**Homepage:** <https://github.com/fonzdm/servarr>
 
 ## Maintainers
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| zees-dev |  |  |
+| Alfonso De Masi | <adm220297@proton.me> |  |
 
 ## Source Code
 
-* <https://github.com/zees-dev/servarr>
+* <https://github.com/fonzdm/servarr>
 
 ## Requirements
 
@@ -310,6 +310,7 @@ flaresolverr:
 |-----|------|---------|-------------|
 | global.certManagerClusterIssuer | string | No default value, leave empty if not required | Insert your cert manager cluster issuer, e.g.: letsencrypt-cloudflare. Do not remove the `&issuer` anchor! @section -- Global |
 | global.countryCode | string | US | Insert the Jellyfin country code @section -- Global |
+| global.externalUrl | string | "http://servarr.local" | Base external URL (protocol + host) used for Homarr external links @section -- Global |
 | global.ingressClassName | string | nginx | Insert your ingress class here, e.g.: &ingressClassName nginx. Do not remove the `&ingressCassName` anchor, and do not leave the anchor value empty, otherwise you will face a `null` value error! @section -- Global |
 | global.mail | string | `nil` | Insert Jellyfin login mail (also used for Jellyseerr integration) @section -- Global |
 | global.password | string | `nil` | Insert the shared Servarr password (used for Jellyfin, Jellyseerr, and qBitTorrent admin) @section -- Global |
@@ -318,6 +319,7 @@ flaresolverr:
 | global.username | string | `nil` | Insert the shared Servarr username (used for Jellyfin, Jellyseerr, and qBitTorrent admin) @section -- Global |
 | indexers | list | The body of the 1337x index is provided as default | The indexers list. Each element of the list is the yaml-formatted body of the [Prowlarr API request](https://prowlarr.com/docs/api/#/Indexer/post_api_v1_indexer) to add that index. @section -- Prowlarr |
 | issuer | object | See the sub fields | For tracking purpose, not used - replaced with pre-existing cluster issuer @section -- Issuer |
+| homarr.config | object | Example dashboard payload (see `values.yaml`) | YAML payload that mirrors the JSON body sent to `/api/trpc/config.save?batch=1` to seed the Homarr dashboard during initialization. @section -- Homarr |
 | issuer.cloudFlareKey | string | `nil` | Insert your CloudFlare key @section -- Issuer |
 | issuer.email | string | `nil` | Insert your email address @section -- Issuer |
 | metrics.enabled | bool | `false` | Anchor to set wether to deploy the export sidecar pods or not. Requires the Prometheus stack. Do not remove the `&metricsEnabled` anchor! @section -- Metrics |
@@ -334,5 +336,3 @@ flaresolverr:
 | volumes.torrentConfig | object | See the sub fields | configuration of the volume used for qBitTorrent internal configuration @section -- Storage |
 | volumes.torrentConfig.name | string | `"torrent-config"` | Name of the torrent configuration pvc. Do not remove the `&torrentConfig` anchor! @section -- Storage |
 | volumes.torrentConfig.size | string | `"250Mi"` | Size of the torrent configuration volume, in Kubernets format @section -- Storage |
-
-
