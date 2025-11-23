@@ -27,6 +27,10 @@ global:
   # @default -- en
   # @section -- Global
   preferredLanguage: "en"
+  # -- (string) Base external URL (protocol + host) used for Homarr external links
+  # @default -- http://servarr.local
+  # @section -- Global
+  externalUrl: "http://servarr.local"
 
 metrics:
   # -- Anchor to set wether to deploy the export sidecar pods or not. Requires the Prometheus stack. Do not remove the `&metricsEnabled` anchor!
@@ -1438,6 +1442,426 @@ jellyseerr:
 
 # @ignore
 homarr:
+  securityContext:
+    pod:
+      fsGroup: 0
+    container:
+      runAsUser: 0
+      runAsGroup: 0
+  # -- Provide the YAML body for Homarr's config.save API request to bootstrap dashboards.
+  #    The value is rendered to JSON (like the Jellyfin transcoder body) and POSTed to
+  #    /api/trpc/config.save?batch=1 once the owner account is ensured.
+  # @default -- Example dashboard payload (mirrors the working request captured from the UI)
+  # @section -- Homarr
+  config:
+    '0':
+      json:
+        name: default
+        config:
+          schemaVersion: 1
+          configProperties:
+            name: default
+          categories: []
+          wrappers:
+            - id: default
+              position: 0
+          apps:
+            - id: f9281cfe-5621-43be-abda-601364bc6883
+              name: FlareSolverr
+              url: 'http://servarr-flaresolverr.servarr.svc.cluster.local:8191'
+              appearance:
+                iconUrl: >-
+                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/flaresolverr.svg
+                appNameStatus: normal
+                positionAppName: column
+                lineClampAppName: 1
+                appNameFontSize: 16
+              network:
+                enabledStatusChecker: true
+                statusCodes:
+                  - '200'
+                  - '301'
+                  - '302'
+                  - '304'
+                  - '307'
+                  - '308'
+              behaviour:
+                isOpeningNewTab: true
+                externalUrl: "{{ $.Values.global.externalUrl }}:8191"
+              area:
+                type: wrapper
+                properties:
+                  id: default
+              shape:
+                md:
+                  location:
+                    x: 1
+                    'y': 2
+                  size:
+                    width: 1
+                    height: 1
+              integration:
+                type: null
+                properties: []
+            - id: bd6a9849-2233-4380-b470-411a5af5a746
+              name: qBittorrent
+              url: 'http://servarr-qbittorrent.servarr.svc.cluster.local:10095'
+              appearance:
+                iconUrl: >-
+                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/qbittorrent.svg
+                appNameStatus: normal
+                positionAppName: column
+                lineClampAppName: 1
+                appNameFontSize: 16
+              network:
+                enabledStatusChecker: true
+                statusCodes:
+                  - '200'
+                  - '301'
+                  - '302'
+                  - '304'
+                  - '307'
+                  - '308'
+              behaviour:
+                isOpeningNewTab: true
+                externalUrl: "{{ $.Values.global.externalUrl }}:10095"
+              area:
+                type: wrapper
+                properties:
+                  id: default
+              shape:
+                md:
+                  location:
+                    x: 2
+                    'y': 2
+                  size:
+                    width: 1
+                    height: 1
+              integration:
+                type: null
+                properties: []
+            - id: d0e10d95-4b4b-4c53-9dd7-f46da143134b
+              name: Jellyfin
+              url: 'http://servarr-jellyfin.servarr.svc.cluster.local:8096'
+              appearance:
+                iconUrl: >-
+                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/jellyfin-vue.svg
+                appNameStatus: normal
+                positionAppName: column
+                lineClampAppName: 1
+                appNameFontSize: 16
+              network:
+                enabledStatusChecker: true
+                statusCodes:
+                  - '200'
+                  - '301'
+                  - '302'
+                  - '304'
+                  - '307'
+                  - '308'
+              behaviour:
+                isOpeningNewTab: true
+                externalUrl: "{{ $.Values.global.externalUrl }}:8096"
+              area:
+                type: wrapper
+                properties:
+                  id: default
+              shape:
+                md:
+                  location:
+                    x: 2
+                    'y': 0
+                  size:
+                    width: 1
+                    height: 1
+              integration:
+                type: null
+                properties: []
+            - id: f8e5ee1b-9128-4f12-a63a-ba5f0978d325
+              name: Sonarr
+              url: 'http://servarr-sonarr.servarr.svc.cluster.local:8989'
+              appearance:
+                iconUrl: >-
+                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/sonarr-4k.svg
+                appNameStatus: normal
+                positionAppName: column
+                lineClampAppName: 1
+                appNameFontSize: 16
+              network:
+                enabledStatusChecker: true
+                statusCodes:
+                  - '200'
+                  - '301'
+                  - '302'
+                  - '304'
+                  - '307'
+                  - '308'
+              behaviour:
+                isOpeningNewTab: true
+                externalUrl: "{{ $.Values.global.externalUrl }}:8989"
+              area:
+                type: wrapper
+                properties:
+                  id: default
+              shape:
+                md:
+                  location:
+                    x: 1
+                    'y': 1
+                  size:
+                    width: 1
+                    height: 1
+              integration:
+                type: null
+                properties: []
+            - id: 7c12a6f4-b136-46f9-844d-43090aa7ecab
+              name: Bazarr
+              url: 'http://servarr-bazarr.servarr.svc.cluster.local:6767'
+              appearance:
+                iconUrl: >-
+                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/bazarr-dark.svg
+                appNameStatus: normal
+                positionAppName: column
+                lineClampAppName: 1
+                appNameFontSize: 16
+              network:
+                enabledStatusChecker: true
+                statusCodes:
+                  - '200'
+                  - '301'
+                  - '302'
+                  - '304'
+                  - '307'
+                  - '308'
+              behaviour:
+                isOpeningNewTab: true
+                externalUrl: "{{ $.Values.global.externalUrl }}:6767"
+              area:
+                type: wrapper
+                properties:
+                  id: default
+              shape:
+                md:
+                  location:
+                    x: 2
+                    'y': 2
+                  size:
+                    width: 1
+                    height: 1
+              integration:
+                type: null
+                properties: []
+            - id: 67fe68fd-317d-4da8-bbe1-4985c11a474b
+              name: Prowlarr
+              url: 'http://servarr-prowlarr.servarr.svc.cluster.local:9696'
+              appearance:
+                iconUrl: >-
+                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/prowlarr.svg
+                appNameStatus: normal
+                positionAppName: column
+                lineClampAppName: 1
+                appNameFontSize: 16
+              network:
+                enabledStatusChecker: true
+                statusCodes:
+                  - '200'
+                  - '301'
+                  - '302'
+                  - '304'
+                  - '307'
+                  - '308'
+              behaviour:
+                isOpeningNewTab: true
+                externalUrl: "{{ $.Values.global.externalUrl }}:9696"
+              area:
+                type: wrapper
+                properties:
+                  id: default
+              shape:
+                md:
+                  location:
+                    x: 0
+                    'y': 3
+                  size:
+                    width: 1
+                    height: 1
+              integration:
+                type: null
+                properties: []
+            - id: 58c0eb0b-b2dc-4d81-9142-453a59cf4f28
+              name: Radarr
+              url: 'http://servarr-radarr.servarr.svc.cluster.local:7878'
+              appearance:
+                iconUrl: >-
+                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/radarr-4k.svg
+                appNameStatus: normal
+                positionAppName: column
+                lineClampAppName: 1
+                appNameFontSize: 16
+              network:
+                enabledStatusChecker: true
+                statusCodes:
+                  - '200'
+                  - '301'
+                  - '302'
+                  - '304'
+                  - '307'
+                  - '308'
+              behaviour:
+                isOpeningNewTab: true
+                externalUrl: "{{ $.Values.global.externalUrl }}:7878"
+              area:
+                type: wrapper
+                properties:
+                  id: default
+              shape:
+                md:
+                  location:
+                    x: 0
+                    'y': 2
+                  size:
+                    width: 1
+                    height: 1
+              integration:
+                type: null
+                properties: []
+            - id: 5c239cf8-28d4-4230-87f9-e3a53871081c
+              name: Homarr
+              url: 'http://servarr-homarr.servarr.svc.cluster.local:10245'
+              appearance:
+                iconUrl: >-
+                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/homarr.svg
+                appNameStatus: normal
+                positionAppName: column
+                lineClampAppName: 1
+                appNameFontSize: 16
+              network:
+                enabledStatusChecker: true
+                statusCodes:
+                  - '200'
+                  - '301'
+                  - '302'
+                  - '304'
+                  - '307'
+                  - '308'
+              behaviour:
+                isOpeningNewTab: true
+                externalUrl: "{{ $.Values.global.externalUrl }}:10245"
+              area:
+                type: wrapper
+                properties:
+                  id: default
+              shape:
+                md:
+                  location:
+                    x: 0
+                    'y': 1
+                  size:
+                    width: 1
+                    height: 1
+              integration:
+                type: null
+                properties: []
+            - id: 695b3684-708f-4653-9895-cfb920f3625a
+              name: Jellyseerr
+              url: 'http://servarr-jellyseerr.servarr.svc.cluster.local:10241'
+              appearance:
+                iconUrl: >-
+                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/jellyseerr.svg
+                appNameStatus: normal
+                positionAppName: column
+                lineClampAppName: 1
+                appNameFontSize: 16
+              network:
+                enabledStatusChecker: true
+                statusCodes:
+                  - '200'
+                  - '301'
+                  - '302'
+                  - '304'
+                  - '307'
+                  - '308'
+              behaviour:
+                isOpeningNewTab: true
+                externalUrl: "{{ $.Values.global.externalUrl }}:10241"
+              area:
+                type: wrapper
+                properties:
+                  id: default
+              shape:
+                md:
+                  location:
+                    x: 1
+                    'y': 3
+                  size:
+                    width: 1
+                    height: 1
+              integration:
+                type: null
+                properties: []
+          widgets:
+            - id: 9b96db14-d85c-4abf-b81c-46e1dd843bfb
+              type: date
+              properties:
+                timezone: Pacific/Auckland
+                customTitle: ''
+                display24HourFormat: false
+                dateFormat: 'dddd, MMMM D'
+                titleState: both
+              area:
+                type: wrapper
+                properties:
+                  id: default
+              shape:
+                sm:
+                  location:
+                    x: 0
+                    'y': 0
+                  size:
+                    width: 1
+                    height: 1
+                md:
+                  location:
+                    x: 0
+                    'y': 0
+                  size:
+                    width: 3
+                    height: 1
+                lg:
+                  location:
+                    x: 0
+                    'y': 0
+                  size:
+                    width: 1
+                    height: 1
+          settings:
+            common:
+              searchEngine:
+                type: google
+                properties: {}
+            customization:
+              layout:
+                enabledLeftSidebar: false
+                enabledRightSidebar: false
+                enabledDocker: false
+                enabledPing: false
+                enabledSearchbar: true
+              pageTitle: Homarr ⭐️
+              logoImageUrl: /imgs/logo/logo.png
+              faviconUrl: /imgs/favicon/favicon-squared.png
+              backgroundImageUrl: ''
+              customCss: ''
+              colors:
+                primary: red
+                secondary: yellow
+                shade: 7
+              appOpacity: 100
+              gridstack:
+                columnCountSmall: 3
+                columnCountMedium: 6
+                columnCountLarge: 10
+            access:
+              allowGuests: false
   metrics:
     main:
       enabled: *metricsEnabled
@@ -1474,7 +1898,7 @@ homarr:
       targetSelector:
         main:
           main:
-            mountPath: /app/data/configs
+            mountPath: /app/data/
     icons:
       enabled: true
       type: pvc

@@ -32,6 +32,10 @@ metadata:
   name: init-homarr-script
 data:
 {{ ( tpl (.Files.Glob "config/scripts/init-homarr.py").AsConfig . ) | indent 2 }}
+{{- if .Values.homarr.config }}
+  homarr-config.json: |
+{{ $.Values.homarr.config | toJson | indent 4 }}
+{{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap 

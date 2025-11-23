@@ -1,6 +1,6 @@
 # Servarr
 
-This project is a complete Servarr Helm Chart that includes also Sonarr, Radarr, Bazarr, Prowlarr, qBitTorrent, Jellyseerr, Jellyfin and Flaresovlerr as sub-charts.
+This project is a complete Servarr Helm Chart that includes also Sonarr, Radarr, Bazarr, Prowlarr, qBitTorrent, Jellyseerr, Jellyfin and Flaresolverr as sub-charts.
 
 ## Getting Started
 
