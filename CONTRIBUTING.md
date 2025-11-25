@@ -8,10 +8,19 @@ Please note we have a code of conduct, please follow it in all your interactions
 
 | Instance | Branch Name | Description |
 |----------|:-----------:|-------------|
-| Stable | `main` | Accepts merges from Working and Hotfixes |
-| Working | `dev` | Accepts merges from Features/Issues and Hotfixes |
-| Feature/Issue | `feat/feature-name` or `fix/bug-name` | Always branch off HEAD of Working |
-| Hotfix | `hotfix/hotfix-name` | Always branch off Stable |
+| Base/Working | `dev` | Default branch for PRs; accepts merges from Features/Issues and Hotfixes |
+| Upstream mirror | `main` | Mirrors upstream; keep in sync without direct PRs |
+| Feature/Issue | `feat/feature-name` or `fix/bug-name` | Always branch off HEAD of `dev` |
+| Hotfix | `hotfix/hotfix-name` | Branch off `dev`; cherry-pick to `main` only when syncing upstream |
+
+## Branching model
+
+- `main` mirrors upstream only; keep it fast-forwarded from upstream without local PRs.
+- `dev` is the default working/base branch; regularly rebase/merge it on top of `main` after upstream syncs.
+- Feature/fix branches start from `dev`, stay rebased on `dev`, and PR back into `dev`.
+- Upstream-bound changes use branches from `main` (e.g., `upstream/feat-*`), open PRs to upstream, then cherry-pick/merge into `dev` after acceptance.
+- Hotfixes start from `dev`, merge to `dev`, and cherry-pick to `main` only if the upstream mirror needs the change.
+- Optional short-lived `release/*` branches can be cut from `dev` to stabilize a release while `dev` keeps moving.
 
 ## Merge Request Process
 
