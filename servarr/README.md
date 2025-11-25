@@ -2,21 +2,21 @@
 
 
 
-![Version: 1.0.2](https://img.shields.io/badge/Version-1.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.2](https://img.shields.io/badge/AppVersion-1.0.2-informational?style=flat-square) 
+![Version: 1.1.0](https://img.shields.io/badge/Version-1.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.1.0](https://img.shields.io/badge/AppVersion-1.1.0-informational?style=flat-square) 
 
 Servarr complete Helm Chart for Kubernetes
 
-**Homepage:** <https://github.com/fonzdm/servarr>
+**Homepage:** <https://github.com/zees-dev/servarr>
 
 ## Maintainers
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| Alfonso De Masi | <adm220297@proton.me> |  |
+| zees-dev |  |  |
 
 ## Source Code
 
-* <https://github.com/fonzdm/servarr>
+* <https://github.com/zees-dev/servarr>
 
 ## Requirements
 

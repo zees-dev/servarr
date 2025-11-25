@@ -13,9 +13,9 @@ keywords:
   - jellyseerr
   - jellyfin
   - flaresolverr
-home: https://github.com/fonzdm/servarr
+home: https://github.com/zees-dev/servarr
 sources:
-  - https://github.com/fonzdm/servarr
+  - https://github.com/zees-dev/servarr
 dependencies:
   - name: sonarr
     version: "21.2.1"
@@ -40,5 +40,4 @@ dependencies:
     repository: "oci://tccr.io/truecharts"
 
 maintainers:
-  - name: Alfonso De Masi
-    email: adm220297@proton.me
+  - name: zees-dev

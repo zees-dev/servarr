@@ -1,6 +1,10 @@
 # Servarr
 
-This project is a complete Servarr Helm Chart that includes also Sonarr, Radarr, Prowlarr, qBitTorrent, Jellyseerr, Jellyfin and Flaresovlerr as sub-charts.
+This project is a complete Servarr Helm Chart that includes also Sonarr, Radarr, Bazarr, Prowlarr, Homarr, qBitTorrent, Jellyseerr, Jellyfin and Flaresolverr as sub-charts.
+
+This fork is maintained by **zees-dev** and is originally based on [fonzdm/servarr](https://github.com/fonzdm/servarr). Huge thanks to the upstream authors and contributors.
+
+> Acknowledgement: this project was forked from https://github.com/fonzdm/servarr and adapted/maintained by zees-dev.
 
 ## Getting Started
 
@@ -18,7 +22,7 @@ These instructions will get you a copy of the project up and running on your loc
 1. Clone the repository:
 
 ```shell
-$ git clone https://github.com/fonzdm/servarr.git && cd servarr
+$ git clone https://github.com/zees-dev/servarr.git && cd servarr
 ```
 
 2. Retrieve the dependencies
@@ -51,13 +55,13 @@ To deploy the Helm Chart:
 1. Add the Helm repository:
 
 ```shell
-$ helm repo add fonzdm https://fonzdm.github.io/servarr
+$ helm repo add zees-dev https://zees-dev.github.io/servarr
 ```
 
 2. Install the release:
 
 ```shell
-$ helm install <release-name> fonzdm/servarr \
+$ helm install <release-name> zees-dev/servarr \
 --namespace servarr \
 --create-namespace \
 --values values.yaml
@@ -79,15 +83,18 @@ Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our code of cond
 
 ## Contributors
 
-<a href="https://github.com/fonzdm/servarr/graphs/contributors">
+<a href="https://github.com/fonzdm/servarr/graphs/contributors" title="Original upstream contributors">
   <img src="https://contrib.rocks/image?repo=fonzdm/servarr" />
 </a>
+<a href="https://github.com/zees-dev/servarr/graphs/contributors" title="Fork contributors">
+  <img src="https://contrib.rocks/image?repo=zees-dev/servarr" />
+</a>
 
-See the full list of [contributors](https://github.com/fonzdm/servarr/contributors) who participated in this project.
+See the full list of contributors - [upstream](https://github.com/fonzdm/servarr/contributors) + [fork](https://github.com/zees-dev/servarr/contributors).
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [releases on this repository](https://github.com/fonzdm/servarr/releases). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [releases on this repository](https://github.com/zees-dev/servarr/releases). 
 
 ###### Keep in mind that each dependency has its own author and their contributors. Please, reach them out on their repositories.
 
