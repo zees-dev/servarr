@@ -50,28 +50,20 @@ $ helm install servarr-dev servarr/ \
 
 ## Deployment
 
-To deploy the Helm Chart:
-
-1. Add the Helm repository:
+Install from GHCR:
 
 ```shell
-$ helm repo add zees-dev https://zees-dev.github.io/servarr
-```
-
-2. Install the release:
-
-```shell
-$ helm install <release-name> zees-dev/servarr \
---namespace servarr \
---create-namespace \
---values values.yaml
+helm install <release-name> oci://ghcr.io/zees-dev/servarr \
+  --namespace servarr \
+  --create-namespace \
+  --values values.yaml
 ```
 
 > [!WARNING]
 >
 > A minimum set of values must include the various parameters with the anchor reference, otherwise the anchors won't work as intended and the deployment may fail. Please, read the [Helm Chart README.md](./servarr/README.md) section to see a minimal `values.yaml` sample.
 
-If you want to install a specific version, execute the previous command adding: `--version x.y.z`
+If you want to install a specific version, add `--version x.y.z`. To pull the package without installing: `helm pull oci://ghcr.io/zees-dev/servarr --version x.y.z`
 
 ### Values
 
