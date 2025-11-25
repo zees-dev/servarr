@@ -6,17 +6,17 @@
 
 Servarr complete Helm Chart for Kubernetes
 
-**Homepage:** <https://github.com/fonzdm/servarr>
+**Homepage:** <https://github.com/zees-dev/servarr>
 
 ## Maintainers
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| Alfonso De Masi | <adm220297@proton.me> |  |
+| zees-dev |  |  |
 
 ## Source Code
 
-* <https://github.com/fonzdm/servarr>
+* <https://github.com/zees-dev/servarr>
 
 ## Requirements
 
