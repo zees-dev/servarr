@@ -210,7 +210,7 @@ try:
                 "SubtitleDownloadLanguages": [],
                 "DisabledSubtitleFetchers": [],
                 "SubtitleFetcherOrder": [],
-                # "PathInfos": [ { "Path": "/mnt/media" } ],
+                "PathInfos": [ { "Path": "/mnt/media" } ],
             }
         },
     )
