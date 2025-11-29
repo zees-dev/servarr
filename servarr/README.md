@@ -315,6 +315,7 @@ flaresolverr:
 | global.externalUrl | string | http://servarr.local | Base external URL (protocol + host) used for Homarr external links |
 | global.ingressClassName | string | nginx | Insert your ingress class here, e.g.: &ingressClassName nginx. Do not remove the `&ingressCassName` anchor, and do not leave the anchor value empty, otherwise you will face a `null` value error! |
 | global.mail | string | `nil` | Insert Jellyfin login mail (also used for Jellyseerr integration) |
+| global.nodeSelector | object | {} | NodeSelector for init jobs and pre-deployment jobs. Ensures jobs run on same node as PVCs when using local-path storage. |
 | global.password | string | `nil` | Insert the shared Servarr password (used for Jellyfin, Jellyseerr, and qBitTorrent admin) |
 | global.preferredLanguage | string | en | Insert the Jellyfin preferred language |
 | global.storageClassName | string | `"network-block"` | Insert your storage class here, e.g.: &storageClassName network-block. Do not remove the `&storageClassName` anchor! |
@@ -358,15 +359,20 @@ flaresolverr:
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| volumes.accessModes | list | `["ReadWriteMany"]` | Access mode for shared PVCs. Use ReadWriteOnce for local-path, ReadWriteMany for network storage |
 | volumes.downloads | object | See the sub fields | configuration of the volume used for torrent downloads |
+| volumes.downloads.enabled | bool | `true` | Enable creation of downloads PVC. Set to false to use hostPath instead |
 | volumes.downloads.name | string | `"downloads-volume"` | Name of the download pvc. Do not remove the `&downloads-volume` anchor! |
 | volumes.downloads.size | string | `"100Gi"` | Size of the downloads volume, in Kubernets format |
 | volumes.media | object | See the sub fields | configuration of the volume used for media storage (i.e.: where movies and tv shows file will be permanently stored) |
+| volumes.media.enabled | bool | `true` | Enable creation of media PVC. Set to false to use hostPath instead |
 | volumes.media.name | string | `"media-volume"` | Name of the media pvc. Do not remove the `&media-volume` anchor! |
 | volumes.media.size | string | `"250Gi"` | Size of the media volume, in Kubernets format |
 | volumes.torrentConfig | object | See the sub fields | configuration of the volume used for qBitTorrent internal configuration |
+| volumes.torrentConfig.enabled | bool | `true` | Enable creation of torrent config PVC. Set to false to manage separately |
 | volumes.torrentConfig.name | string | `"torrent-config"` | Name of the torrent configuration pvc. Do not remove the `&torrentConfig` anchor! |
-| volumes.torrentConfig.size | string | `"250Mi"` | Size of the torrent configuration volume, in Kubernets format |
+| volumes.torrentConfig.size | string | `"50Mi"` | Size of the torrent configuration volume, in Kubernets format |
+| volumes.vctAccessModes | list | `["ReadWriteMany"]` | Access mode for VCT (volume claim templates). Same as accessModes if not specified |
 
 
 ----------------------------------------------
