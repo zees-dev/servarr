@@ -26,6 +26,7 @@ metadata:
 data:
 {{ ( tpl (.Files.Glob "config/scripts/init-sonarr.py" ).AsConfig . ) | indent 2 }}
 ---
+{{- if .Values.homarr.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -35,6 +36,7 @@ data:
 {{- if .Values.homarr.config }}
   homarr-config.json: |
 {{ tpl ($.Values.homarr.config | toJson) $ | indent 4 }}
+{{- end }}
 {{- end }}
 ---
 apiVersion: v1

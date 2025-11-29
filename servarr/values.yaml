@@ -31,6 +31,10 @@ global:
   # @default -- http://servarr.local
   # @section -- Global
   externalUrl: "http://servarr.local"
+  # -- NodeSelector for init jobs and pre-deployment jobs. Ensures jobs run on same node as PVCs when using local-path storage.
+  # @section -- Global
+  # @default -- {}
+  nodeSelector: {}
 
 metrics:
   # -- Anchor to set wether to deploy the export sidecar pods or not. Requires the Prometheus stack. Do not remove the `&metricsEnabled` anchor!
@@ -971,10 +975,21 @@ issuer:
 volumes:
   # @ignore
   storageClass: *storageClassName
+  # -- Access mode for shared PVCs. Use ReadWriteOnce for local-path, ReadWriteMany for network storage
+  # @section -- Storage
+  accessModes:
+    - ReadWriteMany
+  # -- Access mode for VCT (volume claim templates). Same as accessModes if not specified
+  # @section -- Storage
+  vctAccessModes:
+    - ReadWriteMany
   # -- configuration of the volume used for torrent downloads
   # @section -- Storage
   # @default -- See the sub fields
   downloads:
+    # -- Enable creation of downloads PVC. Set to false to use hostPath instead
+    # @section -- Storage
+    enabled: true
     # -- Name of the download pvc. Do not remove the `&downloads-volume` anchor!
     # @section -- Storage
     name: &downloads-volume downloads-volume
@@ -985,6 +1000,9 @@ volumes:
   # @section -- Storage
   # @default -- See the sub fields
   media:
+    # -- Enable creation of media PVC. Set to false to use hostPath instead
+    # @section -- Storage
+    enabled: true
     # -- Name of the media pvc. Do not remove the `&media-volume` anchor!
     # @section -- Storage
     name: &media-volume media-volume
@@ -995,12 +1013,15 @@ volumes:
   # @section -- Storage
   # @default -- See the sub fields
   torrentConfig:
+    # -- Enable creation of torrent config PVC. Set to false to manage separately
+    # @section -- Storage
+    enabled: true
     # -- Name of the torrent configuration pvc. Do not remove the `&torrentConfig` anchor!
     # @section -- Storage
     name: &torrentConfig torrent-config
     # -- Size of the torrent configuration volume, in Kubernets format
     # @section -- Storage
-    size: 250Mi
+    size: 50Mi
 
 # @ignore
 sonarr:
@@ -1047,7 +1068,7 @@ sonarr:
     config:
       enabled: true
       type: pvc
-      size: 500Mi
+      size: 10Mi
       accessModes: ReadWriteMany
       storageClass: *storageClassName
       targetSelector:
@@ -1121,7 +1142,7 @@ radarr:
     config:
       enabled: true
       type: pvc
-      size: 500Mi
+      size: 10Mi
       accessModes: ReadWriteMany
       storageClass: *storageClassName
       targetSelector:
@@ -1185,7 +1206,7 @@ bazarr:
     config:
       enabled: true
       type: pvc
-      size: 500Mi
+      size: 10Mi
       accessModes: ReadWriteMany
       storageClass: *storageClassName
       targetSelector:
@@ -1282,7 +1303,7 @@ jellyfin:
     config:
       enabled: true
       type: pvc
-      size: 500Mi
+      size: 100Mi
       accessModes: ReadWriteMany
       storageClass: *storageClassName
       targetSelector:
@@ -1420,7 +1441,7 @@ jellyseerr:
     config:
       enabled: true
       type: pvc
-      size: 500Mi
+      size: 10Mi
       accessModes: ReadWriteMany
       storageClass: *storageClassName
       targetSelector:
@@ -1442,6 +1463,7 @@ jellyseerr:
 
 # @ignore
 homarr:
+  enabled: true
   securityContext:
     pod:
       fsGroup: 0
@@ -1892,7 +1914,7 @@ homarr:
     config:
       enabled: true
       type: pvc
-      size: 250Mi
+      size: 10Mi
       accessModes: ReadWriteMany
       storageClass: *storageClassName
       targetSelector:
@@ -1902,7 +1924,7 @@ homarr:
     icons:
       enabled: true
       type: pvc
-      size: 100Mi
+      size: 10Mi
       accessModes: ReadWriteMany
       storageClass: *storageClassName
       targetSelector:
@@ -1912,7 +1934,7 @@ homarr:
     data:
       enabled: true
       type: pvc
-      size: 250Mi
+      size: 10Mi
       accessModes: ReadWriteMany
       storageClass: *storageClassName
       targetSelector:
@@ -2026,7 +2048,7 @@ prowlarr:
     config:
       enabled: true
       type: pvc
-      size: 500Mi
+      size: 10Mi
       accessModes: ReadWriteMany
       storageClass: *storageClassName
       targetSelector:
@@ -2043,18 +2065,7 @@ flaresolverr:
   metrics:
     main:
       enabled: *metricsEnabled
+  # FlareSolverr is stateless - no persistence needed
   persistence:
     config:
-      enabled: true
-      type: pvc
-      size: 500Mi
-      accessModes: ReadWriteMany
-      storageClass: *storageClassName
-      targetSelector:
-        main:
-          main:
-            mountPath: /config
-        exportarr:
-          exportarr:
-            mountPath: /config
-            readOnly: true
+      enabled: false

@@ -18,6 +18,10 @@ spec:
         app: "{{ .Release.Name }}"
     spec:
       restartPolicy: Never
+      {{- with .Values.global.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       initContainers:
         - name: wait-for-bazarr
           image: curlimages/curl:8.7.1

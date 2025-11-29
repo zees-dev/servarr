@@ -1,3 +1,4 @@
+{{- if .Values.volumes.downloads.enabled }}
 {{- $is_downloads_pvc_present := (lookup "v1" "PersistentVolumeClaim" .Release.Namespace .Values.volumes.downloads.name) }}
 {{- if not $is_downloads_pvc_present }}
 apiVersion: v1
@@ -11,14 +12,16 @@ metadata:
 spec:
   storageClassName: {{ .Values.volumes.storageClass }}
   accessModes:
-    - ReadWriteMany
+    {{- toYaml .Values.volumes.accessModes | nindent 4 }}
   resources:
     requests:
       storage: {{ .Values.volumes.downloads.size }}
 {{- end }}
+{{- end }}
 
 ---
 
+{{- if .Values.volumes.media.enabled }}
 {{- $is_media_pvc_present := (lookup "v1" "PersistentVolumeClaim" .Release.Namespace .Values.volumes.media.name) }}
 {{- if not $is_media_pvc_present }}
 apiVersion: v1
@@ -32,14 +35,16 @@ metadata:
 spec:
   storageClassName: {{ .Values.volumes.storageClass }}
   accessModes:
-    - ReadWriteMany
+    {{- toYaml .Values.volumes.accessModes | nindent 4 }}
   resources:
     requests:
       storage: {{ .Values.volumes.media.size }}
 {{- end }}
+{{- end }}
 
 ---
 
+{{- if .Values.volumes.torrentConfig.enabled }}
 {{- $is_torrentconfig_pvc_present := (lookup "v1" "PersistentVolumeClaim" .Release.Namespace .Values.volumes.torrentConfig.name) }}
 {{- if not $is_torrentconfig_pvc_present }}
 apiVersion: v1
@@ -53,8 +58,9 @@ metadata:
 spec:
   storageClassName: {{ .Values.volumes.storageClass }}
   accessModes:
-    - ReadWriteMany
+    {{- toYaml .Values.volumes.accessModes | nindent 4 }}
   resources:
     requests:
       storage: {{ .Values.volumes.torrentConfig.size }}
+{{- end }}
 {{- end }}

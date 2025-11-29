@@ -1,3 +1,4 @@
+{{- if .Values.homarr.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -18,6 +19,10 @@ spec:
         app: "{{ .Release.Name }}"
     spec:
       restartPolicy: Never
+      {{- with .Values.global.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       initContainers:
         - name: wait-for-homarr
           image: curlimages/curl:8.7.1
@@ -57,3 +62,4 @@ spec:
         - name: python-script
           configMap:
             name: init-homarr-script
+{{- end }}
