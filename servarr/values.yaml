@@ -1170,6 +1170,25 @@ radarr:
           main:
             mountPath: /mnt/downloads
 
+# -- Bazarr subtitle settings as form entries. Each entry is a [key, value] pair sent to the Bazarr settings API.
+# @section -- Bazarr
+# @default -- English language profile with credential-free providers
+bazarrSettings:
+  # Providers (no credentials required)
+  - ["settings-general-enabled_providers", "yifysubtitles"]
+  - ["settings-general-enabled_providers", "podnapisi"]
+  - ["settings-general-enabled_providers", "subscene"]
+  - ["settings-general-enabled_providers", "tvsubtitles"]
+  # Language settings
+  - ["languages-enabled", "en"]
+  - ["settings-general-single_language", "true"]
+  - ["languages-profiles", '[{"profileId":1,"name":"english","tag":"en","items":[{"id":1,"language":"en","audio_exclude":"False","audio_only_include":"False","hi":"False","forced":"False"}],"cutoff":1,"mustContain":[],"mustNotContain":[],"originalFormat":false}]']
+  # Default language profile for new series/movies
+  - ["settings-general-serie_default_enabled", "true"]
+  - ["settings-general-movie_default_enabled", "true"]
+  - ["settings-general-serie_tag_enabled", "true"]
+  - ["settings-general-movie_tag_enabled", "true"]
+
 # @ignore
 bazarr:
   # @ignore

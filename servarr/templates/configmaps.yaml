@@ -13,11 +13,14 @@ data:
 {{ ( tpl (.Files.Glob "config/scripts/init-radarr.py" ).AsConfig . ) | indent 2 }}
 ---
 apiVersion: v1
-kind: ConfigMap 
+kind: ConfigMap
 metadata:
   name: init-bazarr-script
 data:
 {{ ( tpl (.Files.Glob "config/scripts/init-bazarr.py" ).AsConfig . ) | indent 2 }}
+{{- if .Values.bazarrSettings }}
+  bazarr-settings.json: {{ $.Values.bazarrSettings | toJson | quote }}
+{{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap 
