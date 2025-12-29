@@ -306,6 +306,12 @@ flaresolverr:
 
 ## Values
 
+### Bazarr
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| bazarrSettings | list | English language profile with credential-free providers | Bazarr subtitle settings as form entries. Each entry is a [key, value] pair sent to the Bazarr settings API. |
+
 ### Global
 
 | Key | Type | Default | Description |
