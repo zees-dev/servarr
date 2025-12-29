@@ -1,4 +1,4 @@
-{{- if .Values.qbittorrent.addons.gluetun.enabled }}
+{{- if and .Values.qbittorrent.addons (and .Values.qbittorrent.addons.gluetun .Values.qbittorrent.addons.gluetun.enabled) }}
 # Gluetun control server service for VPN status monitoring
 # Exposes the gluetun HTTP control server internally for homepage widget
 apiVersion: v1
