@@ -1,73 +1,12 @@
 # Servarr
 
-This project is a complete Servarr Helm Chart that includes also Sonarr, Radarr, Bazarr, Prowlarr, Homarr, qBitTorrent, Jellyseerr, Jellyfin and Flaresolverr as sub-charts.
+A Helm chart for Sonarr, Radarr, Prowlarr, Bazarr, qBittorrent, Jellyfin, Seerr and FlareSolverr. Homarr is optional and disabled by default.
 
-This fork is maintained by **zees-dev** and is originally based on [fonzdm/servarr](https://github.com/fonzdm/servarr). Huge thanks to the upstream authors and contributors.
+Chart 2.0.0 brings the validated service versions into public defaults and replaces duplicated setup hooks with repeatable Bun automation. It preserves existing credentials and configuration. VPN settings and Secrets are supplied by the operator.
 
-> Acknowledgement: this project was forked from https://github.com/fonzdm/servarr and adapted/maintained by zees-dev.
+Read the [chart documentation](servarr/README.md), start with [example values](servarr/examples/minimal.yaml), and review [validation results](servarr/VALIDATION.md) before upgrading. Image defaults are pinned to tested versions. Jellyfin 12.0 passed both disposable migration tests and the existing Pi library upgrade.
 
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
-
-### Prerequisites
-
-- Git
-- Helm
-- Kuberentes Cluster (for testing purposes)
-- Python 3
-
-### Installing
-
-1. Clone the repository:
-
-```shell
-$ git clone https://github.com/zees-dev/servarr.git && cd servarr
-```
-
-2. Retrieve the dependencies
-
-```shell
-$ helm dependency update
-```
-
-> [!NOTE]
-> If the previous command fails or goes in timeout (or takes too much), try adding the truecharts Helm repository:
-> ```shell
-> $ helm repo add truecharts https://charts.truecharts.org
-> ```
-> and then execute again the `helm dependency update` command.
-  
-3. Prepare your [`values.yaml`](#values)
-4. Try it in your cluster to check that everything is fine (replace the `servarr/` with the chart folder if your workdir is different):
-
-```shell
-$ helm install servarr-dev servarr/ \
---namespace servarr-dev \
---create-namespace \
---values values.yaml
-```
-
-## Deployment
-
-Install from GHCR:
-
-```shell
-helm install <release-name> oci://ghcr.io/zees-dev/servarr \
-  --namespace servarr \
-  --create-namespace \
-  --values values.yaml
-```
-
-> [!WARNING]
->
-> A minimum set of values must include the various parameters with the anchor reference, otherwise the anchors won't work as intended and the deployment may fail. Please, read the [Helm Chart README.md](./servarr/README.md) section to see a minimal `values.yaml` sample.
-
-If you want to install a specific version, add `--version x.y.z`. To pull the package without installing: `helm pull oci://ghcr.io/zees-dev/servarr --version x.y.z`
-
-### Values
-
-Please read [Helm Chart README.md](./servarr/README.md) for further details on the values supported by the Chart.
+This fork is maintained by zees-dev and is based on [fonzdm/servarr](https://github.com/fonzdm/servarr). Thanks to the upstream authors and contributors.
 
 ## Contributing
 
@@ -93,11 +32,3 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ## License
 
 This project is licensed under the GNU AGPL v3 License - see the [LICENSE](LICENSE) file for details.
-
-<!--
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
--->

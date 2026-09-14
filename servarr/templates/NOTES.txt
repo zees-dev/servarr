@@ -1,15 +1,14 @@
-Chart Details:
-  Name:          {{ .Chart.Name }}
-  Chart Version: {{ .Chart.Version }}
-  App Version:   {{ .Chart.AppVersion }}
+{{ .Release.Name }} chart {{ .Chart.Version }} in namespace {{ .Release.Namespace }}.
 
-Deployment Info:
-  Namespace:     {{ .Release.Namespace }}
-  Release Name:  {{ .Release.Name }}
+Check rollout and setup jobs:
+  kubectl -n {{ .Release.Namespace }} get pods,jobs
+  helm status {{ .Release.Name }} -n {{ .Release.Namespace }}
 
-** Please be patient while the chart is being deployed **
-
-Get more information about the deployment:
-  $ helm status -n {{ .Release.Namespace }} {{ .Release.Name }}
-  $ helm get all -n {{ .Release.Namespace }} {{ .Release.Name }}
-  $ helm get values -n {{ .Release.Namespace }} {{ .Release.Name }} -a
+{{ if .Values.qbittorrent.addons.gluetun.enabled -}}
+VPN enabled: verify a provider exit address and failed clear-interface connections
+before adding torrents. The cluster must enforce NetworkPolicy.
+{{ else -}}
+qBittorrent uses direct networking. Supply the documented VPN values and Secret
+if you require a VPN.
+{{ end }}
+See the chart README for setup behavior, retained claims and upgrade notes.

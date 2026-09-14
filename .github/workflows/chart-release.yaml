@@ -29,9 +29,6 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v4.1.0
 
-      - name: Set up crane
-        uses: imjasonh/setup-crane@v0.4
-
       - name: Fetch cached dependencies charts
         id: cache-charts
         uses: actions/cache/restore@v4
@@ -45,11 +42,17 @@ jobs:
 
       - name: Save dependencies charts in the cache
         if: ${{ steps.cache-charts.outputs.cache-hit != 'true' }}
-        id: cache-charts-save
         uses: actions/cache/save@v4
         with:
           path: ${{ env.CHART_DIR }}/charts
           key: dep-charts-${{ hashFiles('servarr/Chart.yaml') }}
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.0
+
+      - name: Validate chart and setup
+        run: bun run check
 
       - name: Prepare package directory
         run: mkdir -p dist
@@ -68,13 +71,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "${GITHUB_TOKEN}" | helm registry login ghcr.io --username "${{ github.actor }}" --password-stdin
-          crane auth login ghcr.io -u "${{ github.actor }}" -p "${GITHUB_TOKEN}"
-
-      - name: Remove existing package version (if present)
-        env:
-          VERSION: ${{ steps.chart-version.outputs.version }}
-        run: |
-          crane delete "${REGISTRY}/servarr:${VERSION}" || echo "No existing package version to remove"
 
       - name: Push chart to GHCR
         env:

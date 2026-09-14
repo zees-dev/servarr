@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "setup": {
+      "type": "object",
+      "required": ["enabled", "onUpgrade", "image", "timeoutSeconds", "secretKeys", "paths", "categories"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "onUpgrade": {"type": "boolean"},
+        "existingSecret": {"type": "string"},
+        "image": {"type": "string", "minLength": 1},
+        "timeoutSeconds": {"type": "integer", "minimum": 30, "maximum": 3600},
+        "secretKeys": {
+          "type": "object", "required": ["username", "password", "mail"],
+          "additionalProperties": {"type": "string", "minLength": 1}
+        },
+        "paths": {"type": "object", "required": ["sonarr", "radarr", "downloads", "arrDownloads"], "additionalProperties": {"type": "string", "pattern": "^/[^\\r\\n]*$"}},
+        "categories": {"type": "object", "required": ["sonarr", "radarr", "prowlarr"], "additionalProperties": {"type": "string", "minLength": 1}}
+      }
+    },
+    "indexers": {"type": "array", "items": {"type": "object", "required": ["name", "body"], "properties": {"name": {"type": "string", "minLength": 1}, "body": {"type": "object"}}}},
+    "qbittorrent": {"type": "object", "properties": {"vpn": {"type": "object", "properties": {
+      "endpointPort": {"type": "integer", "minimum": 1, "maximum": 65535},
+      "endpointCIDR": {"type": "string"},
+      "dns": {"type": "string", "minLength": 1},
+      "allowedSubnets": {"type": "array", "items": {"type": "string"}}
+    }}}}
+  }
+}

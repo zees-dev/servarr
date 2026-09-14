@@ -53,3 +53,7 @@ charts/*
 
 # do not push kubeconfig clusters
 *.kubeconfig
+# Commit the reproducible dependency lock; packaged dependencies remain ignored.
+!servarr/Chart.lock
+# Locally generated release packages
+/servarr-*.tgz

@@ -1,0 +1,79 @@
+# Replace local-path with your storage class. This example keeps all ingress disabled.
+# Single-node RWO storage; use RWX or explicit placement for a multi-node cluster.
+global:
+  storageClassName: local-path
+setup:
+  timeoutSeconds: 600
+  existingSecret: servarr-credentials
+volumes:
+  storageClass: local-path
+  accessModes:
+    - ReadWriteOnce
+  downloads:
+    size: 100Gi
+  media:
+    size: 250Gi
+  torrentConfig:
+    size: 1Gi
+sonarr:
+  ingress:
+    sonarr-ing:
+      enabled: false
+  persistence:
+    config:
+      storageClass: local-path
+      accessModes: ReadWriteOnce
+      size: 1Gi
+radarr:
+  ingress:
+    radarr-ing:
+      enabled: false
+  persistence:
+    config:
+      storageClass: local-path
+      accessModes: ReadWriteOnce
+      size: 1Gi
+bazarr:
+  ingress:
+    bazarr-ing:
+      enabled: false
+  persistence:
+    config:
+      storageClass: local-path
+      accessModes: ReadWriteOnce
+      size: 1Gi
+prowlarr:
+  ingress:
+    prowlarr-ing:
+      enabled: false
+  persistence:
+    config:
+      storageClass: local-path
+      accessModes: ReadWriteOnce
+      size: 1Gi
+qbittorrent:
+  ingress:
+    qbittorrent-ing:
+      enabled: false
+  persistence: {}
+jellyfin:
+  ingress:
+    jellyfin-ing:
+      enabled: false
+  persistence:
+    config:
+      storageClass: local-path
+      accessModes: ReadWriteOnce
+      size: 1Gi
+jellyseerr:
+  ingress:
+    jellyseerr-ing:
+      enabled: false
+  persistence:
+    config:
+      storageClass: local-path
+      accessModes: ReadWriteOnce
+      size: 1Gi
+flaresolverr:
+  ingress: {}
+  persistence: {}

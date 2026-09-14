@@ -1,0 +1,9 @@
+{
+  "name": "servarr-chart",
+  "private": true,
+  "scripts": {
+    "test": "bun test tests",
+    "check": "bun test tests && helm lint servarr/ -f .github/ci/ci-values.yaml",
+    "test:install": "bun tests/install.ts"
+  }
+}

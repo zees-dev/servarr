@@ -2,8 +2,8 @@ apiVersion: v2
 name: servarr
 description: Servarr complete Helm Chart for Kubernetes
 type: application
-version: 1.1.0
-appVersion: "1.1.0"
+version: 2.0.0
+appVersion: "2.0.0"
 keywords:
   - servarr
   - prowlarr
@@ -20,32 +20,32 @@ sources:
 dependencies:
   - name: sonarr
     version: "25.0.1"
-    repository: "oci://tccr.io/truecharts"
+    repository: "oci://oci.trueforge.org/truecharts"
   - name: radarr
     version: "26.0.0"
-    repository: "oci://tccr.io/truecharts"
+    repository: "oci://oci.trueforge.org/truecharts"
   - name: bazarr
     version: "23.0.0"
-    repository: "oci://tccr.io/truecharts"
+    repository: "oci://oci.trueforge.org/truecharts"
   - name: prowlarr
     version: "21.0.0"
-    repository: "oci://tccr.io/truecharts"
+    repository: "oci://oci.trueforge.org/truecharts"
   - name: qbittorrent
     version: "24.0.0"
-    repository: "oci://tccr.io/truecharts"
+    repository: "oci://oci.trueforge.org/truecharts"
   - name: jellyseerr
     version: "13.11.3"
-    repository: "oci://tccr.io/truecharts"
+    repository: "oci://oci.trueforge.org/truecharts"
   - name: jellyfin
     version: "21.12.6"
-    repository: "oci://tccr.io/truecharts"
+    repository: "oci://oci.trueforge.org/truecharts"
   - name: homarr
     version: "11.0.0"
-    repository: "oci://tccr.io/truecharts"
+    repository: "oci://oci.trueforge.org/truecharts"
     condition: homarr.enabled
   - name: flaresolverr
     version: "16.12.5"
-    repository: "oci://tccr.io/truecharts"
+    repository: "oci://oci.trueforge.org/truecharts"
 
 maintainers:
   - name: zees-dev

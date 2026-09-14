@@ -1,66 +1,21 @@
-{{- if .Values.volumes.downloads.enabled }}
-{{- $is_downloads_pvc_present := (lookup "v1" "PersistentVolumeClaim" .Release.Namespace .Values.volumes.downloads.name) }}
-{{- if not $is_downloads_pvc_present }}
+{{- range $key := list "downloads" "media" "torrentConfig" }}
+{{- $volume := index $.Values.volumes $key }}
+{{- if and $volume.enabled (not (lookup "v1" "PersistentVolumeClaim" $.Release.Namespace $volume.name)) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.volumes.downloads.name }}
+  name: {{ $volume.name }}
   annotations:
     helm.sh/hook: pre-install,pre-upgrade
     helm.sh/hook-weight: "-5"
-    helm.sh/hook-delete-policy: hook-failed
+    helm.sh/resource-policy: keep
 spec:
-  storageClassName: {{ .Values.volumes.storageClass }}
+  storageClassName: {{ $.Values.volumes.storageClass | quote }}
   accessModes:
-    {{- toYaml .Values.volumes.accessModes | nindent 4 }}
+    {{- toYaml $.Values.volumes.accessModes | nindent 4 }}
   resources:
     requests:
-      storage: {{ .Values.volumes.downloads.size }}
-{{- end }}
-{{- end }}
-
+      storage: {{ $volume.size }}
 ---
-
-{{- if .Values.volumes.media.enabled }}
-{{- $is_media_pvc_present := (lookup "v1" "PersistentVolumeClaim" .Release.Namespace .Values.volumes.media.name) }}
-{{- if not $is_media_pvc_present }}
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Values.volumes.media.name }}
-  annotations:
-    helm.sh/hook: pre-install,pre-upgrade
-    helm.sh/hook-weight: "-5"
-    helm.sh/hook-delete-policy: hook-failed
-spec:
-  storageClassName: {{ .Values.volumes.storageClass }}
-  accessModes:
-    {{- toYaml .Values.volumes.accessModes | nindent 4 }}
-  resources:
-    requests:
-      storage: {{ .Values.volumes.media.size }}
-{{- end }}
-{{- end }}
-
----
-
-{{- if .Values.volumes.torrentConfig.enabled }}
-{{- $is_torrentconfig_pvc_present := (lookup "v1" "PersistentVolumeClaim" .Release.Namespace .Values.volumes.torrentConfig.name) }}
-{{- if not $is_torrentconfig_pvc_present }}
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Values.volumes.torrentConfig.name }}
-  annotations:
-    helm.sh/hook: pre-install,pre-upgrade
-    helm.sh/hook-weight: "-5"
-    helm.sh/hook-delete-policy: hook-failed
-spec:
-  storageClassName: {{ .Values.volumes.storageClass }}
-  accessModes:
-    {{- toYaml .Values.volumes.accessModes | nindent 4 }}
-  resources:
-    requests:
-      storage: {{ .Values.volumes.torrentConfig.size }}
 {{- end }}
 {{- end }}

@@ -10,13 +10,13 @@ global:
   # @default -- No default value, leave empty if not required
   # @section -- Global
   certManagerClusterIssuer: &issuer ""
-  # -- (string) Insert the shared Servarr username (used for Jellyfin, Jellyseerr, and qBitTorrent admin)
+  # -- (string) Insert the shared Servarr username (used for Jellyfin, Seerr, and qBitTorrent admin)
   # @section -- Global
   username:
-  # -- (string) Insert the shared Servarr password (used for Jellyfin, Jellyseerr, and qBitTorrent admin)
+  # -- (string) Insert the shared Servarr password (used for Jellyfin, Seerr, and qBitTorrent admin)
   # @section -- Global
   password:
-  # -- (string) Insert Jellyfin login mail (also used for Jellyseerr integration)
+  # -- (string) Insert Jellyfin login mail (also used for Seerr integration)
   # @section -- Global
   mail:
   # -- (string) Insert the Jellyfin country code
@@ -27,10 +27,6 @@ global:
   # @default -- en
   # @section -- Global
   preferredLanguage: "en"
-  # -- (string) Base external URL (protocol + host) used for Homarr external links
-  # @default -- http://servarr.local
-  # @section -- Global
-  externalUrl: "http://servarr.local"
   # -- NodeSelector for init jobs and pre-deployment jobs. Ensures jobs run on same node as PVCs when using local-path storage.
   # @section -- Global
   # @default -- {}
@@ -44,933 +40,18 @@ metrics:
 notifications:
   telegram:
     # -- Enable the Telegram notifications
-    # @section -- Jellyseerr
-    enabled: true
-    # -- (string) Insert the Telegram Chat id, check @get_id_bot for this
-    # @section -- Jellyseerr
-    # @default -- No default value
+    # @section -- Seerr
+    enabled: false
     chat_id:
     # -- (string) Insert your Telegram Bot API token
-    # @section -- Jellyseerr
+    # @section -- Seerr
     # @default -- No default value
     bot_apitoken:
 
 # -- The indexers list. Each element of the list is the yaml-formatted body of the [Prowlarr API request](https://prowlarr.com/docs/api/#/Indexer/post_api_v1_indexer) to add that index.
-# @default -- The body of the 1337x index is provided as default
+# @default -- []
 # @section -- Prowlarr
-indexers:
-  # @ignored
-  - name: 1337x
-    body:
-      indexerUrls:
-        - https://1337x.to/
-        - https://1337x.st/
-        - https://x1337x.ws/
-        - https://x1337x.eu/
-        - https://x1337x.cc/
-      legacyUrls:
-        - https://1337x.is/
-        - https://1337x.gd/
-        - https://1337x.mrunblock.bond/
-        - https://1337x.abcproxy.org/
-        - https://1337x.so/
-        - https://1337x.unblockit.download/
-        - https://1337x.unblockninja.com/
-        - https://1337x.ninjaproxy1.com/
-        - https://1337x.proxyninja.org/
-        - https://1337x.proxyninja.net/
-        - https://1337x.torrentbay.st/
-        - https://1337x.torrentsbay.org/
-        - https://x1337x.se/
-      definitionName: 1337x
-      description: 1337X is a Public torrent site that offers verified torrent downloads
-      language: en-US
-      enable: true
-      redirect: false
-      supportsRss: true
-      supportsSearch: true
-      supportsRedirect: false
-      supportsPagination: false
-      appProfileId: 1
-      protocol: torrent
-      privacy: public
-      capabilities:
-        limitsMax: 100
-        limitsDefault: 100
-        categories:
-          - id: 5000
-            name: TV
-            subCategories:
-              - id: 5070
-                name: TV/Anime
-                subCategories: []
-              - id: 5040
-                name: TV/HD
-                subCategories: []
-              - id: 5030
-                name: TV/SD
-                subCategories: []
-              - id: 5080
-                name: TV/Documentary
-                subCategories: []
-          - id: 3000
-            name: Audio
-            subCategories:
-              - id: 3010
-                name: Audio/MP3
-                subCategories: []
-              - id: 3040
-                name: Audio/Lossless
-                subCategories: []
-              - id: 3020
-                name: Audio/Video
-                subCategories: []
-              - id: 3050
-                name: Audio/Other
-                subCategories: []
-              - id: 3030
-                name: Audio/Audiobook
-                subCategories: []
-          - id: 2000
-            name: Movies
-            subCategories:
-              - id: 2070
-                name: Movies/DVD
-                subCategories: []
-              - id: 2030
-                name: Movies/SD
-                subCategories: []
-              - id: 2010
-                name: Movies/Foreign
-                subCategories: []
-              - id: 2040
-                name: Movies/HD
-                subCategories: []
-              - id: 2060
-                name: Movies/3D
-                subCategories: []
-              - id: 2045
-                name: Movies/UHD
-                subCategories: []
-          - id: 4000
-            name: PC
-            subCategories:
-              - id: 4030
-                name: PC/Mac
-                subCategories: []
-              - id: 4070
-                name: PC/Mobile-Android
-                subCategories: []
-              - id: 4060
-                name: PC/Mobile-iOS
-                subCategories: []
-              - id: 4050
-                name: PC/Games
-                subCategories: []
-              - id: 4040
-                name: PC/Mobile-Other
-                subCategories: []
-          - id: 1000
-            name: Console
-            subCategories:
-              - id: 1080
-                name: Console/PS3
-                subCategories: []
-              - id: 1020
-                name: Console/PSP
-                subCategories: []
-              - id: 1040
-                name: Console/XBox
-                subCategories: []
-              - id: 1050
-                name: Console/XBox 360
-                subCategories: []
-              - id: 1090
-                name: Console/Other
-                subCategories: []
-              - id: 1030
-                name: Console/Wii
-                subCategories: []
-              - id: 1010
-                name: Console/NDS
-                subCategories: []
-              - id: 1110
-                name: Console/3DS
-                subCategories: []
-              - id: 1180
-                name: Console/PS4
-                subCategories: []
-          - id: 6000
-            name: XXX
-            subCategories:
-              - id: 6010
-                name: XXX/DVD
-                subCategories: []
-              - id: 6060
-                name: XXX/ImageSet
-                subCategories: []
-          - id: 8000
-            name: Other
-            subCategories:
-              - id: 8010
-                name: Other/Misc
-                subCategories: []
-          - id: 7000
-            name: Books
-            subCategories:
-              - id: 7020
-                name: Books/EBook
-                subCategories: []
-              - id: 7030
-                name: Books/Comics
-                subCategories: []
-        supportsRawSearch: true
-        searchParams:
-          - q
-          - q
-        tvSearchParams:
-          - q
-          - season
-          - ep
-        movieSearchParams:
-          - q
-        musicSearchParams:
-          - q
-          - album
-          - artist
-        bookSearchParams:
-          - q
-      priority: 20
-      downloadClientId: 0
-      added: "0001-01-01T00:00:00Z"
-      sortName: 1337x
-      name: 1337x
-      fields:
-        - name: definitionFile
-          value: 1337x
-        - name: baseUrl
-        - name: baseSettings.queryLimit
-        - name: baseSettings.grabLimit
-        - name: baseSettings.limitsUnit
-          value: 0
-        - name: torrentBaseSettings.appMinimumSeeders
-        - name: torrentBaseSettings.seedRatio
-        - name: torrentBaseSettings.seedTime
-        - name: torrentBaseSettings.packSeedTime
-        - name: torrentBaseSettings.preferMagnetUrl
-          value: false
-        - name: uploader
-        - name: info_uploader
-          value: 'You can filter by Uploader by entering a Case Sensitive username, or leave empty to get all results.<br>Note: this is the username of the Uploader and not the Groupname that often show up at the end of 1337x titles, eg -GalaxyRG.'
-        - name: info_flaresolverr
-          value: 'This site may use Cloudflare DDoS Protection, therefore Prowlarr requires <a href="https://wiki.servarr.com/prowlarr/faq#can-i-use-flaresolverr-indexers" target="_blank" rel="noreferrer">FlareSolverr</a> to access it.'
-        - name: downloadlink
-          value: 0
-        - name: downloadlink2
-          value: 1
-        - name: info_download
-          value: As the iTorrents .torrent download link on this site is known to fail from time to time, we suggest using the magnet link as a fallback. The BTCache and Torrage services are not supported because they require additional user interaction (a captcha for BTCache and a download button on Torrage.)
-        - name: sort
-          value: 2
-        - name: type
-          value: 1
-      implementationName: Cardigann
-      implementation: Cardigann
-      configContract: CardigannSettings
-      infoLink: https://wiki.servarr.com/prowlarr/supported-indexers#1337x
-      tags: []
-  - name: Knaben
-    body:
-      indexerUrls:
-        - https://knaben.org/
-      legacyUrls:
-        - https://knaben.eu/
-      definitionName: Knaben
-      description: Knaben is a Public torrent meta-search engine
-      language: en-US
-      encoding: Unicode (UTF-8)
-      enable: true
-      redirect: false
-      supportsRss: true
-      supportsSearch: true
-      supportsRedirect: false
-      supportsPagination: false
-      appProfileId: 1
-      protocol: torrent
-      privacy: public
-      capabilities:
-        limitsMax: 100
-        limitsDefault: 100
-        categories:
-          - id: 3000
-            name: Audio
-            subCategories:
-              - id: 3010
-                name: Audio/MP3
-                subCategories: []
-              - id: 3040
-                name: Audio/Lossless
-                subCategories: []
-              - id: 3030
-                name: Audio/Audiobook
-                subCategories: []
-              - id: 3020
-                name: Audio/Video
-                subCategories: []
-              - id: 3050
-                name: Audio/Other
-                subCategories: []
-          - id: 1100000
-            name: Audio
-            subCategories: []
-          - id: 1101000
-            name: MP3
-            subCategories: []
-          - id: 1102000
-            name: Lossless
-            subCategories: []
-          - id: 1103000
-            name: Audiobook
-            subCategories: []
-          - id: 1104000
-            name: Audio Video
-            subCategories: []
-          - id: 1105000
-            name: Radio
-            subCategories: []
-          - id: 1106000
-            name: Audio Other
-            subCategories: []
-          - id: 5000
-            name: TV
-            subCategories:
-              - id: 5040
-                name: TV/HD
-                subCategories: []
-              - id: 5030
-                name: TV/SD
-                subCategories: []
-              - id: 5045
-                name: TV/UHD
-                subCategories: []
-              - id: 5080
-                name: TV/Documentary
-                subCategories: []
-              - id: 5020
-                name: TV/Foreign
-                subCategories: []
-              - id: 5060
-                name: TV/Sport
-                subCategories: []
-              - id: 5050
-                name: TV/Other
-                subCategories: []
-              - id: 5070
-                name: TV/Anime
-                subCategories: []
-          - id: 2100000
-            name: TV
-            subCategories: []
-          - id: 2101000
-            name: TV HD
-            subCategories: []
-          - id: 2102000
-            name: TV SD
-            subCategories: []
-          - id: 2103000
-            name: TV UHD
-            subCategories: []
-          - id: 2104000
-            name: Documentary
-            subCategories: []
-          - id: 2105000
-            name: TV Foreign
-            subCategories: []
-          - id: 2106000
-            name: Sport
-            subCategories: []
-          - id: 2107000
-            name: Cartoon
-            subCategories: []
-          - id: 2108000
-            name: TV Other
-            subCategories: []
-          - id: 2000
-            name: Movies
-            subCategories:
-              - id: 2040
-                name: Movies/HD
-                subCategories: []
-              - id: 2030
-                name: Movies/SD
-                subCategories: []
-              - id: 2045
-                name: Movies/UHD
-                subCategories: []
-              - id: 2070
-                name: Movies/DVD
-                subCategories: []
-              - id: 2010
-                name: Movies/Foreign
-                subCategories: []
-              - id: 2060
-                name: Movies/3D
-                subCategories: []
-              - id: 2020
-                name: Movies/Other
-                subCategories: []
-          - id: 3100000
-            name: Movies
-            subCategories: []
-          - id: 3101000
-            name: Movies HD
-            subCategories: []
-          - id: 3102000
-            name: Movies SD
-            subCategories: []
-          - id: 3103000
-            name: Movies UHD
-            subCategories: []
-          - id: 3104000
-            name: Movies DVD
-            subCategories: []
-          - id: 3105000
-            name: Movies Foreign
-            subCategories: []
-          - id: 3106000
-            name: Movies Bollywood
-            subCategories: []
-          - id: 3107000
-            name: Movies 3D
-            subCategories: []
-          - id: 3108000
-            name: Movies Other
-            subCategories: []
-          - id: 4000
-            name: PC
-            subCategories:
-              - id: 4050
-                name: PC/Games
-                subCategories: []
-              - id: 4010
-                name: PC/0day
-                subCategories: []
-              - id: 4030
-                name: PC/Mac
-                subCategories: []
-              - id: 4020
-                name: PC/ISO
-                subCategories: []
-              - id: 4040
-                name: PC/Mobile-Other
-                subCategories: []
-              - id: 4070
-                name: PC/Mobile-Android
-                subCategories: []
-              - id: 4060
-                name: PC/Mobile-iOS
-                subCategories: []
-          - id: 4100000
-            name: PC
-            subCategories: []
-          - id: 4101000
-            name: Games
-            subCategories: []
-          - id: 4102000
-            name: Software
-            subCategories: []
-          - id: 4103000
-            name: Mac
-            subCategories: []
-          - id: 4104000
-            name: Unix
-            subCategories: []
-          - id: 6000
-            name: XXX
-            subCategories:
-              - id: 6040
-                name: XXX/x264
-                subCategories: []
-              - id: 6060
-                name: XXX/ImageSet
-                subCategories: []
-              - id: 6070
-                name: XXX/Other
-                subCategories: []
-          - id: 5100000
-            name: XXX
-            subCategories: []
-          - id: 5101000
-            name: XXX Video
-            subCategories: []
-          - id: 5102000
-            name: XXX ImageSet
-            subCategories: []
-          - id: 5103000
-            name: XXX Games
-            subCategories: []
-          - id: 5104000
-            name: XXX Hentai
-            subCategories: []
-          - id: 5105000
-            name: XXX Other
-            subCategories: []
-          - id: 6100000
-            name: Anime
-            subCategories: []
-          - id: 6101000
-            name: Anime Subbed
-            subCategories: []
-          - id: 6102000
-            name: Anime Dubbed
-            subCategories: []
-          - id: 6103000
-            name: Anime Dual audio
-            subCategories: []
-          - id: 6104000
-            name: Anime Raw
-            subCategories: []
-          - id: 6105000
-            name: Music Video
-            subCategories: []
-          - id: 7000
-            name: Books
-            subCategories:
-              - id: 7050
-                name: Books/Other
-                subCategories: []
-              - id: 7020
-                name: Books/EBook
-                subCategories: []
-              - id: 7030
-                name: Books/Comics
-                subCategories: []
-              - id: 7010
-                name: Books/Mags
-                subCategories: []
-              - id: 7040
-                name: Books/Technical
-                subCategories: []
-          - id: 6106000
-            name: Literature
-            subCategories: []
-          - id: 6107000
-            name: Music
-            subCategories: []
-          - id: 6108000
-            name: Anime non-english translated
-            subCategories: []
-          - id: 1000
-            name: Console
-            subCategories:
-              - id: 1180
-                name: Console/PS4
-                subCategories: []
-              - id: 1080
-                name: Console/PS3
-                subCategories: []
-              - id: 1120
-                name: Console/PS Vita
-                subCategories: []
-              - id: 1020
-                name: Console/PSP
-                subCategories: []
-              - id: 1050
-                name: Console/XBox 360
-                subCategories: []
-              - id: 1040
-                name: Console/XBox
-                subCategories: []
-              - id: 1010
-                name: Console/NDS
-                subCategories: []
-              - id: 1030
-                name: Console/Wii
-                subCategories: []
-              - id: 1130
-                name: Console/WiiU
-                subCategories: []
-              - id: 1110
-                name: Console/3DS
-                subCategories: []
-              - id: 1090
-                name: Console/Other
-                subCategories: []
-          - id: 7100000
-            name: Console
-            subCategories: []
-          - id: 7101000
-            name: PS4
-            subCategories: []
-          - id: 7102000
-            name: PS3
-            subCategories: []
-          - id: 7103000
-            name: PS2
-            subCategories: []
-          - id: 7104000
-            name: PS1
-            subCategories: []
-          - id: 7105000
-            name: PS Vita
-            subCategories: []
-          - id: 7106000
-            name: PSP
-            subCategories: []
-          - id: 7107000
-            name: Xbox 360
-            subCategories: []
-          - id: 7108000
-            name: Xbox
-            subCategories: []
-          - id: 7109000
-            name: Switch
-            subCategories: []
-          - id: 7110000
-            name: NDS
-            subCategories: []
-          - id: 7111000
-            name: Wii
-            subCategories: []
-          - id: 7112000
-            name: WiiU
-            subCategories: []
-          - id: 7113000
-            name: 3DS
-            subCategories: []
-          - id: 7114000
-            name: GameCube
-            subCategories: []
-          - id: 7115000
-            name: Other
-            subCategories: []
-          - id: 8100000
-            name: Mobile
-            subCategories: []
-          - id: 8101000
-            name: Android
-            subCategories: []
-          - id: 8102000
-            name: IOS
-            subCategories: []
-          - id: 8103000
-            name: PC Other
-            subCategories: []
-          - id: 9100000
-            name: Books
-            subCategories: []
-          - id: 9101000
-            name: EBooks
-            subCategories: []
-          - id: 9102000
-            name: Comics
-            subCategories: []
-          - id: 9103000
-            name: Magazines
-            subCategories: []
-          - id: 9104000
-            name: Technical
-            subCategories: []
-          - id: 9105000
-            name: Books Other
-            subCategories: []
-          - id: 8000
-            name: Other
-            subCategories:
-              - id: 8010
-                name: Other/Misc
-                subCategories: []
-          - id: 10100000
-            name: Other
-            subCategories: []
-          - id: 10101000
-            name: Other Misc
-            subCategories: []
-        supportsRawSearch: false
-        searchParams:
-          - q
-        tvSearchParams:
-          - q
-          - season
-          - ep
-        movieSearchParams:
-          - q
-        musicSearchParams:
-          - q
-        bookSearchParams:
-          - q
-      priority: 15
-      downloadClientId: 0
-      added: "0001-01-01T00:00:00Z"
-      sortName: knaben
-      name: Knaben
-      fields:
-        - name: baseUrl
-        - name: baseSettings.queryLimit
-        - name: baseSettings.grabLimit
-        - name: baseSettings.limitsUnit
-          value: 0
-        - name: torrentBaseSettings.appMinimumSeeders
-        - name: torrentBaseSettings.seedRatio
-        - name: torrentBaseSettings.seedTime
-        - name: torrentBaseSettings.packSeedTime
-        - name: torrentBaseSettings.preferMagnetUrl
-          value: false
-      implementationName: Knaben
-      implementation: Knaben
-      configContract: NoAuthTorrentBaseSettings
-      infoLink: https://wiki.servarr.com/prowlarr/supported-indexers#knaben
-      tags: []
-  - name: "The Pirate Bay"
-    body:
-      indexerUrls:
-        - https://thepiratebay.org/
-        - https://thepiratebay.unblockninja.com/
-        - https://thepiratebay.ninjaproxy1.com/
-        - https://tpb.proxyninja.org/
-        - https://thepiratebay.proxyninja.net/
-        - https://thepiratebay.torrentbay.st/
-        - https://tpb.skynetcloud.site/
-        - https://piratehaven.xyz/
-        - https://mirrorbay.top/
-        - https://thepiratebay0.org/
-        - https://thepiratebay10.xyz/
-        - https://pirateproxylive.org/
-        - https://thehiddenbay.com/
-        - https://thepiratebay.zone/
-        - https://tpb.party/
-        - https://piratebayproxy.live/
-        - https://piratebay.live/
-        - https://piratebay.party/
-        - https://thepiratebay.party/
-        - https://thepiratebaye.org/
-        - https://thepiratebay.cloud/
-        - https://tpb-proxy.xyz/
-        - https://tpb.re/
-        - https://tpirbay.site/
-        - https://tpirbay.top/
-        - https://tpirbay.xyz/
-      legacyUrls:
-        - https://pirate-proxy.page/
-        - https://5mins.shop/
-        - https://tpb.surf/
-        - https://tpb.monster/
-        - https://thepiratebay.host/
-        - https://piratetoday.xyz/
-        - https://tpb.wtf/
-        - https://piratebayo3klnzokct3wt5yyxb2vpebbuyjl7m623iaxmqhsd52coid.onion.ly/
-        - https://piratebayo3klnzokct3wt5yyxb2vpebbuyjl7m623iaxmqhsd52coid.tor2web.to/
-        - https://piratebayo3klnzokct3wt5yyxb2vpebbuyjl7m623iaxmqhsd52coid.tor2web.link/
-        - https://tpb25.ukpass.co/
-        - https://tpb29.ukpass.co/
-        - https://piratenow.xyz/
-        - https://pirate-proxy.ink/
-        - https://proxifiedpiratebay.org/
-        - https://unlockedpiratebay.com/
-        - https://tpb.one/
-        - https://piratebayorg.net/
-        - https://tpbproxy.click/
-        - https://pirateproxy.live/
-        - https://ukpiratebay.org/
-        - https://piratebay.by/
-        - https://pirate-proxy.date/
-        - https://thepirateproxy.net/
-        - https://thepiratebay.abcproxy.org/
-        - https://tpb.proxyninja.net/
-        - https://tpb31.ukpass.co/
-        - https://thepiratebay10.org/
-        - https://pirate-proxy.africa/
-        - https://5mins.eu/
-        - https://piratebay.army/
-        - https://tpb-visit.me/
-        - https://pirate-proxy.ong/
-      definitionName: thepiratebay
-      description: The Pirate Bay (TPB) is the galaxy’s most resilient Public BitTorrent site
-      language: en-US
-      enable: true
-      redirect: false
-      supportsRss: true
-      supportsSearch: true
-      supportsRedirect: false
-      supportsPagination: false
-      appProfileId: 1
-      protocol: torrent
-      privacy: public
-      capabilities:
-        limitsMax: 100
-        limitsDefault: 100
-        categories:
-          - id: 3000
-            name: Audio
-            subCategories:
-              - id: 3030
-                name: Audio/Audiobook
-                subCategories: []
-              - id: 3040
-                name: Audio/Lossless
-                subCategories: []
-              - id: 3050
-                name: Audio/Other
-                subCategories: []
-              - id: 3020
-                name: Audio/Video
-                subCategories: []
-          - id: 2000
-            name: Movies
-            subCategories:
-              - id: 2020
-                name: Movies/Other
-                subCategories: []
-              - id: 2040
-                name: Movies/HD
-                subCategories: []
-              - id: 2060
-                name: Movies/3D
-                subCategories: []
-              - id: 2030
-                name: Movies/SD
-                subCategories: []
-              - id: 2045
-                name: Movies/UHD
-                subCategories: []
-          - id: 5000
-            name: TV
-            subCategories:
-              - id: 5050
-                name: TV/Other
-                subCategories: []
-              - id: 5040
-                name: TV/HD
-                subCategories: []
-              - id: 5045
-                name: TV/UHD
-                subCategories: []
-          - id: 4000
-            name: PC
-            subCategories:
-              - id: 4030
-                name: PC/Mac
-                subCategories: []
-              - id: 4040
-                name: PC/Mobile-Other
-                subCategories: []
-              - id: 4060
-                name: PC/Mobile-iOS
-                subCategories: []
-              - id: 4070
-                name: PC/Mobile-Android
-                subCategories: []
-              - id: 4050
-                name: PC/Games
-                subCategories: []
-          - id: 1000
-            name: Console
-            subCategories:
-              - id: 1180
-                name: Console/PS4
-                subCategories: []
-              - id: 1040
-                name: Console/XBox
-                subCategories: []
-              - id: 1030
-                name: Console/Wii
-                subCategories: []
-              - id: 1090
-                name: Console/Other
-                subCategories: []
-          - id: 6000
-            name: XXX
-            subCategories:
-              - id: 6010
-                name: XXX/DVD
-                subCategories: []
-              - id: 6060
-                name: XXX/ImageSet
-                subCategories: []
-              - id: 6040
-                name: XXX/x264
-                subCategories: []
-              - id: 6045
-                name: XXX/UHD
-                subCategories: []
-              - id: 6070
-                name: XXX/Other
-                subCategories: []
-          - id: 8000
-            name: Other
-            subCategories: []
-          - id: 7000
-            name: Books
-            subCategories:
-              - id: 7020
-                name: Books/EBook
-                subCategories: []
-              - id: 7030
-                name: Books/Comics
-                subCategories: []
-              - id: 7050
-                name: Books/Other
-                subCategories: []
-        supportsRawSearch: false
-        searchParams:
-          - q
-          - q
-        tvSearchParams:
-          - q
-          - season
-          - ep
-        movieSearchParams:
-          - q
-        musicSearchParams:
-          - q
-        bookSearchParams:
-          - q
-      priority: 25
-      downloadClientId: 0
-      added: "0001-01-01T00:00:00Z"
-      sortName: pirate bay
-      name: The Pirate Bay
-      fields:
-        - name: definitionFile
-          value: thepiratebay
-        - name: baseUrl
-        - name: baseSettings.queryLimit
-        - name: baseSettings.grabLimit
-        - name: baseSettings.limitsUnit
-          value: 0
-        - name: torrentBaseSettings.appMinimumSeeders
-        - name: torrentBaseSettings.seedRatio
-        - name: torrentBaseSettings.seedTime
-        - name: torrentBaseSettings.packSeedTime
-        - name: torrentBaseSettings.preferMagnetUrl
-          value: false
-        - name: uploader
-        - name: info_uploader
-          value: 'You can filter by Uploader by entering a Case Sensitive username, or leave empty to get all results.<br>Note: this is the username of the Uploader and not the Groupname that often show up at the end of TPB titles, eg -MeGusta.'
-        - name: info_api
-          value: This indexer uses the API at https://apibay.org/ to get its official TPB data. Choose any site link that you can access/prefer so that you can view the torrent details page when browsing the search results for this indexer.
-      implementationName: Cardigann
-      implementation: Cardigann
-      configContract: CardigannSettings
-      infoLink: https://wiki.servarr.com/prowlarr/supported-indexers#thepiratebay
-      tags: []
-
-# -- For tracking purpose, not used - replaced with pre-existing cluster issuer
-# @section -- Issuer
-# @default -- See the sub fields
-issuer:
-  # @section -- Issuer
-  server: https://acme-v02.api.letsencrypt.org/directory
-  # -- Insert your email address
-  # @section -- Issuer
-  email:
-  # @section -- Issuer
-  secretName: letsencrypt-prod
-  # @section -- Issuer
-  ingressClassName: *ingressClassName
-  # -- Insert your CloudFlare key
-  # @section -- Issuer
-  cloudFlareKey:
+indexers: []
 
 volumes:
   # @ignore
@@ -1021,10 +102,12 @@ volumes:
     name: &torrentConfig torrent-config
     # -- Size of the torrent configuration volume, in Kubernets format
     # @section -- Storage
-    size: 50Mi
+    size: 1Gi
 
 # @ignore
 sonarr:
+  podOptions:
+    nodeSelector: null
   # @ignore
   metrics:
     main:
@@ -1039,12 +122,41 @@ sonarr:
               SONARR__AUTH__METHOD: "External"
               SONARR__AUTH__REQUIRED: "DisabledForLocalAddresses"
   # @ignore
+        initContainers:
+          runtime:
+            enabled: true
+            type: init
+            imageSelector: image
+            command:
+              - /bin/sh
+              - "-ec"
+            args:
+              - mkdir -p /bootstrap-runtime/s6; chmod 0700 /bootstrap-runtime/s6
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+              privileged: false
+              readOnlyRootFilesystem: true
+              runAsGroup: 568
+              runAsNonRoot: true
+              runAsUser: 568
+              seccompProfile:
+                type: RuntimeDefault
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                cpu: 100m
+                memory: 64Mi
   ingress:
     # @ignore
     sonarr-ing:
       enabled: true
       primary: true
-      required: true
+      required: false
       expandObjectName: false
       annotations:
         cert-manager.io/cluster-issuer: *issuer
@@ -1068,7 +180,7 @@ sonarr:
     config:
       enabled: true
       type: pvc
-      size: 10Mi
+      size: 1Gi
       accessModes: ReadWriteMany
       storageClass: *storageClassName
       targetSelector:
@@ -1080,6 +192,7 @@ sonarr:
             mountPath: /config
             readOnly: true
     # @ignore
+      targetSelectAll: false
     media:
       enabled: true
       type: pvc
@@ -1088,7 +201,7 @@ sonarr:
         main:
           main:
             mountPath: /mnt/media
-    # @ignore
+      targetSelectAll: false
     downloads:
       enabled: true
       type: pvc
@@ -1097,9 +210,43 @@ sonarr:
         main:
           main:
             mountPath: /mnt/downloads
-
-# @ignore
+      targetSelectAll: false
+    devshm:
+      targetSelectAll: false
+      targetSelector:
+        main:
+          main: {}
+    shared:
+      targetSelectAll: false
+      targetSelector:
+        main:
+          main: {}
+    tmp:
+      targetSelectAll: false
+      targetSelector:
+        main:
+          main: {}
+    varlogs:
+      targetSelectAll: false
+      targetSelector:
+        main:
+          main: {}
+    varrun:
+      targetSelectAll: false
+      targetSelector:
+        main:
+          main:
+            mountPath: /run
+            subPath: s6
+          runtime:
+            mountPath: /bootstrap-runtime
+            subPath: ""
+  image:
+    repository: lscr.io/linuxserver/sonarr
+    tag: version-4.0.19.2979@sha256:82172b363f9eddc02aca544f880a044f2ceb9aaf190bc87e4454e2f705eb91d0
 radarr:
+  podOptions:
+    nodeSelector: null
   # @ignore
   metrics:
     main:
@@ -1119,7 +266,7 @@ radarr:
     radarr-ing:
       enabled: true
       primary: true
-      required: true
+      required: false
       expandObjectName: false
       annotations:
         cert-manager.io/cluster-issuer: *issuer
@@ -1142,7 +289,7 @@ radarr:
     config:
       enabled: true
       type: pvc
-      size: 10Mi
+      size: 1Gi
       accessModes: ReadWriteMany
       storageClass: *storageClassName
       targetSelector:
@@ -1173,24 +320,17 @@ radarr:
 # -- Bazarr subtitle settings as form entries. Each entry is a [key, value] pair sent to the Bazarr settings API.
 # @section -- Bazarr
 # @default -- English language profile with credential-free providers
+  image:
+    repository: oci.trueforge.org/containerforge/radarr
+    tag: 6.3.0.10514@sha256:1a28d28027740413bd6b8d363e0c9b0927f5fcd8c941cff754bd237798454d10
 bazarrSettings:
-  # Providers (no credentials required)
-  - ["settings-general-enabled_providers", "yifysubtitles"]
-  - ["settings-general-enabled_providers", "podnapisi"]
-  - ["settings-general-enabled_providers", "subscene"]
-  - ["settings-general-enabled_providers", "tvsubtitles"]
-  # Language settings
-  - ["languages-enabled", "en"]
-  - ["settings-general-single_language", "true"]
-  - ["languages-profiles", '[{"profileId":1,"name":"english","tag":"en","items":[{"id":1,"language":"en","audio_exclude":"False","audio_only_include":"False","hi":"False","forced":"False"}],"cutoff":1,"mustContain":[],"mustNotContain":[],"originalFormat":false}]']
-  # Default language profile for new series/movies
-  - ["settings-general-serie_default_enabled", "true"]
-  - ["settings-general-movie_default_enabled", "true"]
-  - ["settings-general-serie_tag_enabled", "true"]
-  - ["settings-general-movie_tag_enabled", "true"]
-
-# @ignore
+  - - languages-enabled
+    - en
+  - - settings-general-single_language
+    - "true"
 bazarr:
+  podOptions:
+    nodeSelector: null
   # @ignore
   metrics:
     main:
@@ -1201,7 +341,7 @@ bazarr:
     bazarr-ing:
       enabled: true
       primary: true
-      required: true
+      required: false
       expandObjectName: false
       annotations:
         cert-manager.io/cluster-issuer: *issuer
@@ -1225,7 +365,7 @@ bazarr:
     config:
       enabled: true
       type: pvc
-      size: 10Mi
+      size: 1Gi
       accessModes: ReadWriteMany
       storageClass: *storageClassName
       targetSelector:
@@ -1236,6 +376,7 @@ bazarr:
           exportarr:
             mountPath: /config
             readOnly: true
+      targetSelectAll: false
     media:
       enabled: true
       type: pvc
@@ -1244,6 +385,7 @@ bazarr:
         main:
           main:
             mountPath: /mnt/media
+      targetSelectAll: false
     downloads:
       enabled: true
       type: pvc
@@ -1252,9 +394,75 @@ bazarr:
         main:
           main:
             mountPath: /mnt/downloads
-
-# @ignore
+      targetSelectAll: false
+    devshm:
+      targetSelectAll: false
+      targetSelector:
+        main:
+          main: {}
+    shared:
+      targetSelectAll: false
+      targetSelector:
+        main:
+          main: {}
+    tmp:
+      targetSelectAll: false
+      targetSelector:
+        main:
+          main: {}
+    varlogs:
+      targetSelectAll: false
+      targetSelector:
+        main:
+          main: {}
+    varrun:
+      targetSelectAll: false
+      targetSelector:
+        main:
+          main:
+            mountPath: /run
+            subPath: s6
+          runtime:
+            mountPath: /bootstrap-runtime
+            subPath: ""
+  image:
+    repository: ghcr.io/linuxserver/bazarr
+    tag: v1.6.0-ls363@sha256:84b6f05a7a4194fafe5a0bec062d32f6ae9ea74db33d43d678cb9a3191f31c24
+  workload:
+    main:
+      podSpec:
+        initContainers:
+          runtime:
+            enabled: true
+            type: init
+            imageSelector: image
+            command:
+              - /bin/sh
+              - "-ec"
+            args:
+              - mkdir -p /bootstrap-runtime/s6; chmod 0700 /bootstrap-runtime/s6
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+              privileged: false
+              readOnlyRootFilesystem: true
+              runAsGroup: 568
+              runAsNonRoot: true
+              runAsUser: 568
+              seccompProfile:
+                type: RuntimeDefault
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                cpu: 100m
+                memory: 64Mi
 jellyfin:
+  podOptions:
+    nodeSelector: null
   metrics:
     main:
       enabled: *metricsEnabled
@@ -1297,7 +505,7 @@ jellyfin:
     jellyfin-ing:
       enabled: true
       primary: true
-      required: true
+      required: false
       expandObjectName: false
       annotations:
         cert-manager.io/cluster-issuer: *issuer
@@ -1392,10 +600,15 @@ jellyfin:
         - "hevc"
       AllowOnDemandMetadataBasedKeyframeExtractionForExtensions:
         - "mkv"
-      TranscodingTempPath: "/config/transcodes" # mounted as a volume
+      TranscodingTempPath: "/config/transcodes"  # mounted as a volume
 
 # @ignore
+  image:
+    repository: ghcr.io/jellyfin/jellyfin
+    tag: 12.0@sha256:74f4d87d9cf262c52d62be6be265c0355c6a7e21d0477ab6c654a49a4f8b1fd4
 jellyseerr:
+  podOptions:
+    nodeSelector: null
   metrics:
     main:
       enabled: *metricsEnabled
@@ -1437,7 +650,7 @@ jellyseerr:
     jellyseerr-ing:
       enabled: true
       primary: true
-      required: true
+      required: false
       expandObjectName: false
       annotations:
         cert-manager.io/cluster-issuer: *issuer
@@ -1460,7 +673,7 @@ jellyseerr:
     config:
       enabled: true
       type: pvc
-      size: 10Mi
+      size: 1Gi
       accessModes: ReadWriteMany
       storageClass: *storageClassName
       targetSelector:
@@ -1481,8 +694,21 @@ jellyseerr:
             mountPath: /mnt/media
 
 # @ignore
+    imagecache:
+      enabled: true
+      type: emptyDir
+      mountPath: /app/.next/cache
+      targetSelectAll: false
+      targetSelector:
+        main:
+          main: {}
+  image:
+    repository: ghcr.io/seerr-team/seerr
+    tag: v3.4.1@sha256:f4768de5f616248d723e05891f3345a1402123775d03bf0890dbfedc0831bda1
 homarr:
-  enabled: true
+  podOptions:
+    nodeSelector: null
+  enabled: false
   securityContext:
     pod:
       fsGroup: 0
@@ -1494,415 +720,6 @@ homarr:
   #    /api/trpc/config.save?batch=1 once the owner account is ensured.
   # @default -- Example dashboard payload (mirrors the working request captured from the UI)
   # @section -- Homarr
-  config:
-    '0':
-      json:
-        name: default
-        config:
-          schemaVersion: 1
-          configProperties:
-            name: default
-          categories: []
-          wrappers:
-            - id: default
-              position: 0
-          apps:
-            - id: f9281cfe-5621-43be-abda-601364bc6883
-              name: FlareSolverr
-              url: 'http://servarr-flaresolverr.servarr.svc.cluster.local:8191'
-              appearance:
-                iconUrl: >-
-                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/flaresolverr.svg
-                appNameStatus: normal
-                positionAppName: column
-                lineClampAppName: 1
-                appNameFontSize: 16
-              network:
-                enabledStatusChecker: true
-                statusCodes:
-                  - '200'
-                  - '301'
-                  - '302'
-                  - '304'
-                  - '307'
-                  - '308'
-              behaviour:
-                isOpeningNewTab: true
-                externalUrl: "{{ $.Values.global.externalUrl }}:8191"
-              area:
-                type: wrapper
-                properties:
-                  id: default
-              shape:
-                md:
-                  location:
-                    x: 1
-                    'y': 2
-                  size:
-                    width: 1
-                    height: 1
-              integration:
-                type: null
-                properties: []
-            - id: bd6a9849-2233-4380-b470-411a5af5a746
-              name: qBittorrent
-              url: 'http://servarr-qbittorrent.servarr.svc.cluster.local:10095'
-              appearance:
-                iconUrl: >-
-                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/qbittorrent.svg
-                appNameStatus: normal
-                positionAppName: column
-                lineClampAppName: 1
-                appNameFontSize: 16
-              network:
-                enabledStatusChecker: true
-                statusCodes:
-                  - '200'
-                  - '301'
-                  - '302'
-                  - '304'
-                  - '307'
-                  - '308'
-              behaviour:
-                isOpeningNewTab: true
-                externalUrl: "{{ $.Values.global.externalUrl }}:10095"
-              area:
-                type: wrapper
-                properties:
-                  id: default
-              shape:
-                md:
-                  location:
-                    x: 2
-                    'y': 2
-                  size:
-                    width: 1
-                    height: 1
-              integration:
-                type: null
-                properties: []
-            - id: d0e10d95-4b4b-4c53-9dd7-f46da143134b
-              name: Jellyfin
-              url: 'http://servarr-jellyfin.servarr.svc.cluster.local:8096'
-              appearance:
-                iconUrl: >-
-                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/jellyfin-vue.svg
-                appNameStatus: normal
-                positionAppName: column
-                lineClampAppName: 1
-                appNameFontSize: 16
-              network:
-                enabledStatusChecker: true
-                statusCodes:
-                  - '200'
-                  - '301'
-                  - '302'
-                  - '304'
-                  - '307'
-                  - '308'
-              behaviour:
-                isOpeningNewTab: true
-                externalUrl: "{{ $.Values.global.externalUrl }}:8096"
-              area:
-                type: wrapper
-                properties:
-                  id: default
-              shape:
-                md:
-                  location:
-                    x: 2
-                    'y': 0
-                  size:
-                    width: 1
-                    height: 1
-              integration:
-                type: null
-                properties: []
-            - id: f8e5ee1b-9128-4f12-a63a-ba5f0978d325
-              name: Sonarr
-              url: 'http://servarr-sonarr.servarr.svc.cluster.local:8989'
-              appearance:
-                iconUrl: >-
-                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/sonarr-4k.svg
-                appNameStatus: normal
-                positionAppName: column
-                lineClampAppName: 1
-                appNameFontSize: 16
-              network:
-                enabledStatusChecker: true
-                statusCodes:
-                  - '200'
-                  - '301'
-                  - '302'
-                  - '304'
-                  - '307'
-                  - '308'
-              behaviour:
-                isOpeningNewTab: true
-                externalUrl: "{{ $.Values.global.externalUrl }}:8989"
-              area:
-                type: wrapper
-                properties:
-                  id: default
-              shape:
-                md:
-                  location:
-                    x: 1
-                    'y': 1
-                  size:
-                    width: 1
-                    height: 1
-              integration:
-                type: null
-                properties: []
-            - id: 7c12a6f4-b136-46f9-844d-43090aa7ecab
-              name: Bazarr
-              url: 'http://servarr-bazarr.servarr.svc.cluster.local:6767'
-              appearance:
-                iconUrl: >-
-                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/bazarr-dark.svg
-                appNameStatus: normal
-                positionAppName: column
-                lineClampAppName: 1
-                appNameFontSize: 16
-              network:
-                enabledStatusChecker: true
-                statusCodes:
-                  - '200'
-                  - '301'
-                  - '302'
-                  - '304'
-                  - '307'
-                  - '308'
-              behaviour:
-                isOpeningNewTab: true
-                externalUrl: "{{ $.Values.global.externalUrl }}:6767"
-              area:
-                type: wrapper
-                properties:
-                  id: default
-              shape:
-                md:
-                  location:
-                    x: 2
-                    'y': 2
-                  size:
-                    width: 1
-                    height: 1
-              integration:
-                type: null
-                properties: []
-            - id: 67fe68fd-317d-4da8-bbe1-4985c11a474b
-              name: Prowlarr
-              url: 'http://servarr-prowlarr.servarr.svc.cluster.local:9696'
-              appearance:
-                iconUrl: >-
-                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/prowlarr.svg
-                appNameStatus: normal
-                positionAppName: column
-                lineClampAppName: 1
-                appNameFontSize: 16
-              network:
-                enabledStatusChecker: true
-                statusCodes:
-                  - '200'
-                  - '301'
-                  - '302'
-                  - '304'
-                  - '307'
-                  - '308'
-              behaviour:
-                isOpeningNewTab: true
-                externalUrl: "{{ $.Values.global.externalUrl }}:9696"
-              area:
-                type: wrapper
-                properties:
-                  id: default
-              shape:
-                md:
-                  location:
-                    x: 0
-                    'y': 3
-                  size:
-                    width: 1
-                    height: 1
-              integration:
-                type: null
-                properties: []
-            - id: 58c0eb0b-b2dc-4d81-9142-453a59cf4f28
-              name: Radarr
-              url: 'http://servarr-radarr.servarr.svc.cluster.local:7878'
-              appearance:
-                iconUrl: >-
-                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/radarr-4k.svg
-                appNameStatus: normal
-                positionAppName: column
-                lineClampAppName: 1
-                appNameFontSize: 16
-              network:
-                enabledStatusChecker: true
-                statusCodes:
-                  - '200'
-                  - '301'
-                  - '302'
-                  - '304'
-                  - '307'
-                  - '308'
-              behaviour:
-                isOpeningNewTab: true
-                externalUrl: "{{ $.Values.global.externalUrl }}:7878"
-              area:
-                type: wrapper
-                properties:
-                  id: default
-              shape:
-                md:
-                  location:
-                    x: 0
-                    'y': 2
-                  size:
-                    width: 1
-                    height: 1
-              integration:
-                type: null
-                properties: []
-            - id: 5c239cf8-28d4-4230-87f9-e3a53871081c
-              name: Homarr
-              url: 'http://servarr-homarr.servarr.svc.cluster.local:10245'
-              appearance:
-                iconUrl: >-
-                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/homarr.svg
-                appNameStatus: normal
-                positionAppName: column
-                lineClampAppName: 1
-                appNameFontSize: 16
-              network:
-                enabledStatusChecker: true
-                statusCodes:
-                  - '200'
-                  - '301'
-                  - '302'
-                  - '304'
-                  - '307'
-                  - '308'
-              behaviour:
-                isOpeningNewTab: true
-                externalUrl: "{{ $.Values.global.externalUrl }}:10245"
-              area:
-                type: wrapper
-                properties:
-                  id: default
-              shape:
-                md:
-                  location:
-                    x: 0
-                    'y': 1
-                  size:
-                    width: 1
-                    height: 1
-              integration:
-                type: null
-                properties: []
-            - id: 695b3684-708f-4653-9895-cfb920f3625a
-              name: Jellyseerr
-              url: 'http://servarr-jellyseerr.servarr.svc.cluster.local:10241'
-              appearance:
-                iconUrl: >-
-                  https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/jellyseerr.svg
-                appNameStatus: normal
-                positionAppName: column
-                lineClampAppName: 1
-                appNameFontSize: 16
-              network:
-                enabledStatusChecker: true
-                statusCodes:
-                  - '200'
-                  - '301'
-                  - '302'
-                  - '304'
-                  - '307'
-                  - '308'
-              behaviour:
-                isOpeningNewTab: true
-                externalUrl: "{{ $.Values.global.externalUrl }}:10241"
-              area:
-                type: wrapper
-                properties:
-                  id: default
-              shape:
-                md:
-                  location:
-                    x: 1
-                    'y': 3
-                  size:
-                    width: 1
-                    height: 1
-              integration:
-                type: null
-                properties: []
-          widgets:
-            - id: 9b96db14-d85c-4abf-b81c-46e1dd843bfb
-              type: date
-              properties:
-                timezone: Pacific/Auckland
-                customTitle: ''
-                display24HourFormat: false
-                dateFormat: 'dddd, MMMM D'
-                titleState: both
-              area:
-                type: wrapper
-                properties:
-                  id: default
-              shape:
-                sm:
-                  location:
-                    x: 0
-                    'y': 0
-                  size:
-                    width: 1
-                    height: 1
-                md:
-                  location:
-                    x: 0
-                    'y': 0
-                  size:
-                    width: 3
-                    height: 1
-                lg:
-                  location:
-                    x: 0
-                    'y': 0
-                  size:
-                    width: 1
-                    height: 1
-          settings:
-            common:
-              searchEngine:
-                type: google
-                properties: {}
-            customization:
-              layout:
-                enabledLeftSidebar: false
-                enabledRightSidebar: false
-                enabledDocker: false
-                enabledPing: false
-                enabledSearchbar: true
-              pageTitle: Homarr ⭐️
-              logoImageUrl: /imgs/logo/logo.png
-              faviconUrl: /imgs/favicon/favicon-squared.png
-              backgroundImageUrl: ''
-              customCss: ''
-              colors:
-                primary: red
-                secondary: yellow
-                shade: 7
-              appOpacity: 100
-              gridstack:
-                columnCountSmall: 3
-                columnCountMedium: 6
-                columnCountLarge: 10
-            access:
-              allowGuests: false
   metrics:
     main:
       enabled: *metricsEnabled
@@ -1910,7 +727,7 @@ homarr:
     homarr-ing:
       enabled: true
       primary: true
-      required: true
+      required: false
       expandObjectName: false
       annotations:
         cert-manager.io/cluster-issuer: *issuer
@@ -1933,7 +750,7 @@ homarr:
     config:
       enabled: true
       type: pvc
-      size: 10Mi
+      size: 1Gi
       accessModes: ReadWriteMany
       storageClass: *storageClassName
       targetSelector:
@@ -1943,7 +760,7 @@ homarr:
     icons:
       enabled: true
       type: pvc
-      size: 10Mi
+      size: 1Gi
       accessModes: ReadWriteMany
       storageClass: *storageClassName
       targetSelector:
@@ -1953,7 +770,7 @@ homarr:
     data:
       enabled: true
       type: pvc
-      size: 10Mi
+      size: 1Gi
       accessModes: ReadWriteMany
       storageClass: *storageClassName
       targetSelector:
@@ -1964,11 +781,12 @@ homarr:
     vpn: null
 
 qbittorrent:
+  podOptions:
+    nodeSelector: null
   # -- Whether to enable or disable CSRF Protection on qBitTorrent WebGUI
   # @section -- Torrent
-  # @default -- false
-  csrf_protection: false
-  # @ignore
+  # @default -- true
+  csrf_protection: true
   metrics:
     main:
       enabled: *metricsEnabled
@@ -1981,11 +799,20 @@ qbittorrent:
             env:
               QBITTORRENT__USE_PROFILE: false
   # @ignore
+            command:
+              - /usr/bin/tini
+              - "--"
+              - /bin/sh
+              - "-ec"
+            args:
+              - "test -s /config/qBittorrent/qBittorrent.conf || { echo 'qBittorrent setup has not completed'; exit 70; }\n{{ if .Values.addons.gluetun.enabled }}\ngrep -Fqx 'Session\\Interface=tun0' /config/qBittorrent/qBittorrent.conf || { echo 'Set the existing qBittorrent network interface to tun0 before enabling VPN'; exit 71; }\nuntil curl --fail --silent --connect-timeout 2 --max-time 3 http://127.0.0.1:9999/ >/dev/null; do sleep 2; done\n{{ end }}\nexec /entrypoint.sh"
+      replicas: 1
+      strategy: Recreate
   ingress:
     qbittorrent-ing:
       enabled: true
       primary: true
-      required: true
+      required: false
       expandObjectName: false
       annotations:
         cert-manager.io/cluster-issuer: *issuer
@@ -2028,7 +855,83 @@ qbittorrent:
             mountPath: /downloads
 
 # @ignore
+  image:
+    repository: oci.trueforge.org/containerforge/qbittorrent
+    tag: 5.2.3@sha256:8929ad12c4b0e7cddb77b4de7fb250c8d6b68881494fcac7679a284de0510d99
+    pullPolicy: IfNotPresent
+  gluetunImage:
+    repository: docker.io/qmcgaw/gluetun
+    tag: v3.41.3@sha256:fa19cc76b2af13d57a8d3dc3066f2ada061b1c761b8aecf989b3877c0486e027
+    pullPolicy: IfNotPresent
+  addons:
+    gluetun:
+      enabled: false
+      targetSelector:
+        - main
+      container:
+        env: null
+        envList:
+          - name: VPN_SERVICE_PROVIDER
+            value: custom
+          - name: VPN_TYPE
+            value: wireguard
+          - name: VPN_INTERFACE
+            value: tun0
+          - name: WIREGUARD_ALLOWED_IPS
+            value: "0.0.0.0/0,::/0"
+          - name: WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL
+            value: 25s
+          - name: DNS_SERVER
+            value: "off"
+          - name: DNS_ADDRESS
+            value: "{{ .Values.vpn.dns }}"
+          - name: DNS_KEEP_NAMESERVER
+            value: "off"
+          - name: FIREWALL
+            value: "on"
+          - name: FIREWALL_INPUT_PORTS
+            value: "{{ .Values.service.main.ports.main.port }}"
+          - name: FIREWALL_OUTBOUND_SUBNETS
+            value: "{{ join \",\" .Values.vpn.allowedSubnets }}"
+          - name: HEALTH_RESTART_VPN
+            value: "on"
+        lifecycle: null
+        probes:
+          startup:
+            enabled: true
+            type: exec
+            command:
+              - /gluetun-entrypoint
+              - healthcheck
+            spec:
+              initialDelaySeconds: 5
+              periodSeconds: 5
+              timeoutSeconds: 5
+              failureThreshold: 60
+              successThreshold: 1
+          readiness:
+            enabled: true
+            type: exec
+            command:
+              - /gluetun-entrypoint
+              - healthcheck
+            spec:
+              initialDelaySeconds: 5
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 2
+              successThreshold: 1
+  vpn:
+    endpointCIDR: ""
+    endpointPort: 51820
+    dns: 10.64.0.1
+    allowedSubnets: []
+  service:
+    gluetun:
+      enabled: false
 prowlarr:
+  podOptions:
+    nodeSelector: null
   metrics:
     main:
       enabled: *metricsEnabled
@@ -2044,7 +947,7 @@ prowlarr:
     prowlarr-ing:
       enabled: true
       primary: true
-      required: true
+      required: false
       expandObjectName: false
       annotations:
         cert-manager.io/cluster-issuer: *issuer
@@ -2067,7 +970,7 @@ prowlarr:
     config:
       enabled: true
       type: pvc
-      size: 10Mi
+      size: 1Gi
       accessModes: ReadWriteMany
       storageClass: *storageClassName
       targetSelector:
@@ -2080,7 +983,12 @@ prowlarr:
             readOnly: true
 
 # @ignore
+  image:
+    repository: oci.trueforge.org/containerforge/prowlarr
+    tag: 2.5.2.5491@sha256:10d3a49f86152c49a71348b8a4bb58792fcab38fc43876171cea81dc71e4a182
 flaresolverr:
+  podOptions:
+    nodeSelector: null
   metrics:
     main:
       enabled: *metricsEnabled
@@ -2088,3 +996,36 @@ flaresolverr:
   persistence:
     config:
       enabled: false
+
+  image:
+    repository: ghcr.io/flaresolverr/flaresolverr
+    tag: v3.5.2@sha256:c80ae007ce2ccdcd217a12426e4f039ef763ff90738c808d38810c3e59323767
+setup:
+  enabled: true
+  image: oven/bun:1.4.0
+  timeoutSeconds: 600
+  existingSecret: ""
+  secretKeys:
+    username: username
+    password: password
+    mail: mail
+  onUpgrade: true
+  paths:
+    sonarr: /mnt/media
+    radarr: /mnt/media
+    downloads: /downloads
+    arrDownloads: /mnt/downloads
+  categories:
+    sonarr: sonarr
+    radarr: radarr
+    prowlarr: prowlarr
+  mediaManagement:
+    sonarr: {}
+    radarr: {}
+  jellyfin:
+    libraryName: Library
+    libraryPath: /mnt/media
+    libraryOptions: {}
+  seerr:
+    sonarrProfile: ""
+    radarrProfile: ""

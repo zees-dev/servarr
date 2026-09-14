@@ -1,385 +1,95 @@
-# servarr
+# Servarr chart
 
+Servarr installs Sonarr, Radarr, Prowlarr, Bazarr, qBittorrent, Jellyfin, Seerr and FlareSolverr. Homarr remains an optional dependency, disabled by default, with manual setup. The existing `jellyseerr` values key and resource names are retained for Seerr so upgrades keep the same configuration claim.
 
+## Versions
 
-![Version: 1.1.0](https://img.shields.io/badge/Version-1.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.1.0](https://img.shields.io/badge/AppVersion-1.1.0-informational?style=flat-square) 
+Chart 2.0.0 pins the latest stable application versions checked on 2026-09-14 by version and digest. These versions passed the Pi service upgrades and disposable fresh-install tests. Enable Renovate for this repository to receive image, chart and GitHub Action update PRs; validate and deploy each accepted update.
 
-Servarr complete Helm Chart for Kubernetes
+| Component | Default |
+| --- | --- |
+| Sonarr | 4.0.19.2979 |
+| Radarr | 6.3.0.10514 |
+| Prowlarr | 2.5.2.5491 |
+| Bazarr | 1.6.0 |
+| qBittorrent | 5.2.3 |
+| Gluetun | 3.41.3 |
+| Jellyfin | 12.0 |
+| Seerr | 3.4.1 |
+| FlareSolverr | 3.5.2 |
 
-**Homepage:** <https://github.com/zees-dev/servarr>
+Subchart versions are independently pinned in Chart.yaml. Their current registry is `oci://oci.trueforge.org/truecharts`. Override any application's `image.repository` and `image.tag` through values when validating another version.
 
-## Maintainers
+## Installation
 
-| Name | Email | Url |
-| ---- | ------ | --- |
-| zees-dev |  |  |
+Use Kubernetes with a storage provisioner. A cluster that enforces NetworkPolicy is required for VPN protection. Configure ingress and certificates for your environment; an ingress controller is not installed by this chart. Local storage requires every application and setup job that mounts a shared claim to run on the same node. For storage that supports mounting from multiple nodes, choose the appropriate access modes.
 
-## Source Code
+Create a Secret in the intended namespace with keys `username`, `password` and `mail`. Set `setup.existingSecret` to its name. The password must contain at least eight characters. The older `global.username/password/mail` values remain supported, but Helm stores those values in release metadata. The setup code never prints credentials or response bodies.
 
-* <https://github.com/zees-dev/servarr>
+Start with [examples/minimal.yaml](examples/minimal.yaml). Change its storage class, capacities and credentials Secret name. YAML anchors apply within one file only; changing `global.storageClassName` in an overlay does not update aliases that were already expanded from another file. The example explicitly sets the affected claims.
 
-## Requirements
-
-| Repository | Name | Version |
-|------------|------|---------|
-| oci://tccr.io/truecharts | bazarr | 23.0.0 |
-| oci://tccr.io/truecharts | flaresolverr | 16.12.5 |
-| oci://tccr.io/truecharts | homarr | 11.0.0 |
-| oci://tccr.io/truecharts | jellyfin | 21.12.6 |
-| oci://tccr.io/truecharts | jellyseerr | 13.11.3 |
-| oci://tccr.io/truecharts | prowlarr | 21.0.0 |
-| oci://tccr.io/truecharts | qbittorrent | 24.0.0 |
-| oci://tccr.io/truecharts | radarr | 26.0.0 |
-| oci://tccr.io/truecharts | sonarr | 25.0.1 |
-
----
-
-> [!IMPORTANT]  
-> Please consider that this chart is a collection of several public helm charts.
-> These are included as sub-charts of the Servarr chart and, due to some Helm limitation, some configuration are only possible via values file.
-> For this reason, the servarr default [values.yaml](#./values.yaml) included in the chart is quite huge and it used to model the configuration of the subcharts.
-> But don't you worry! I provided some handy values, using [yaml anchors](https://medium.com/@kinghuang/docker-compose-anchors-aliases-extensions-a1e4105d70bd), to defined top-level fields.
-> Follow the table below and forget everything else. 
-
-> [!CAUTION] 
-> Please, do not remove Anchors when you see them (the strage syntax with the `&`) and make sure you include all the parameters that are using the anchors. Check the minimal `values.yaml` reference.
-
-<details><summary>Minimal <code>values.yaml</code> sample</summary>
-
-```yaml
-global:
-  storageClassName: &storageClassName "<replace-with-your-storage-class-name>"
-  ingressClassName: &ingressClassName "<replace-with-your-ingress-class-name>"
-  certManagerClusterIssuer: &issuer
-  username:
-  password:
-  mail:
-  countryCode: "US"
-  preferredLanguage: "en"
-
-metrics:
-  enabled: &metricsEnabled false
-
-volumes:
-  storageClass: *storageClassName
-  downloads:
-    name: &downloads-volume downloads-volume
-    size: 100Gi
-  media:
-    name: &media-volume media-volume
-    size: 250Gi
-  torrentConfig:
-    name: &torrentConfig torrent-config
-    size: 250Mi
-
-sonarr:
-  metrics:
-    main:
-      enabled: *metricsEnabled
-  workload:
-    main:
-      podSpec:
-        containers:
-          main:
-            env:
-              SONARR__API_KEY: *apikey
-  ingress:
-    sonarr-ing:
-      annotations:
-        cert-manager.io/cluster-issuer: *issuer
-      ingressClassName: *ingressClassName
-      hosts:
-        - host: sonarr.local
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - hosts:
-            - sonarr.local
-          secretName: sonarr-tls
-  persistence:
-    config:
-      storageClass: *storageClassName
-    media:
-      existingClaim: *media-volume
-    downloads:
-      existingClaim: *downloads-volume
-
-radarr:
-  metrics:
-    main:
-      enabled: *metricsEnabled
-  workload:
-    main:
-      podSpec:
-        containers:
-          main:
-            env:
-              RADARR__API_KEY: *apikey
-  ingress:
-    radarr-ing:
-      annotations:
-        cert-manager.io/cluster-issuer: *issuer
-      ingressClassName: *ingressClassName
-      hosts:
-        - host: radarr.local
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - hosts:
-            - radarr.local
-          secretName: radarr-tls
-  persistence:
-    config:
-      storageClass: *storageClassName
-    media:
-      existingClaim: *media-volume
-    downloads:
-      existingClaim: *downloads-volume
-
-bazarr:
-  metrics:
-    main:
-      enabled: *metricsEnabled
-  ingress:
-    bazarr-ing:
-      annotations:
-        cert-manager.io/cluster-issuer: *issuer
-      ingressClassName: *ingressClassName
-      hosts:
-        - host: bazarr.local
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - hosts:
-            - bazarr.local
-          secretName: bazarr-tls
-  persistence:
-    config:
-      storageClass: *storageClassName
-    media:
-      existingClaim: *media-volume
-    downloads:
-      existingClaim: *downloads-volume
-
-jellyfin:
-  metrics:
-    main:
-      enabled: *metricsEnabled
-  ingress:
-    jellyfin-ing:
-      annotations:
-        cert-manager.io/cluster-issuer: *issuer
-      ingressClassName: *ingressClassName
-      hosts:
-        - host: jellyfin.local
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - hosts:
-            - jellyfin.local
-          secretName: jellyfin-tls
-  persistence:
-    config:
-      storageClass: *storageClassName
-    media:
-      existingClaim: *media-volume
-
-jellyseerr:
-  metrics:
-    main:
-      enabled: *metricsEnabled
-  ingress:
-    jellyseerr-ing:
-      annotations:
-        cert-manager.io/cluster-issuer: *issuer
-      ingressClassName: *ingressClassName
-      hosts:
-        - host: jellyseerr.local
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - hosts:
-            - jellyseerr.local
-          secretName: jellyseerr-tls
-  persistence:
-    config:
-      storageClass: *storageClassName
-    media:
-      existingClaim: *media-volume
-
-homarr:
-  metrics:
-    main:
-      enabled: *metricsEnabled
-  ingress:
-    homarr-ing:
-      annotations:
-        cert-manager.io/cluster-issuer: *issuer
-      ingressClassName: *ingressClassName
-      hosts:
-        - host: homarr.local
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - hosts:
-            - homarr.local
-          secretName: homarr-tls
-  persistence:
-    config:
-      storageClass: *storageClassName
-    icons:
-      storageClass: *storageClassName
-    data:
-      storageClass: *storageClassName
-
-qbittorrent:
-  metrics:
-    main:
-      enabled: *metricsEnabled
-  ingress:
-    qbittorrent-ing:
-      annotations:
-        cert-manager.io/cluster-issuer: *issuer
-      ingressClassName: *ingressClassName
-      hosts:
-        - host: torrent.local
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - hosts:
-            - torrent.local
-          secretName: torrent-tls
-  persistence:
-    config:
-      existingClaim: *torrentConfig
-    downloads:
-      existingClaim: *downloads-volume
-
-prowlarr:
-  metrics:
-    main:
-      enabled: *metricsEnabled
-  workload:
-    main:
-      podSpec:
-        containers:
-          main:
-            env:
-              PROWLARR__API_KEY: *apikey
-  ingress:
-    prowlarr-ing:
-      annotations:
-        cert-manager.io/cluster-issuer: *issuer
-      ingressClassName: *ingressClassName
-      hosts:
-        - host: prowlarr.local
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - hosts:
-            - prowlarr.local
-          secretName: prowlarr-tls
-  persistence:
-    config:
-      storageClass: *storageClassName
-
-flaresolverr:
-  metrics:
-    main:
-      enabled: *metricsEnabled
-  persistence:
-    config:
-      storageClass: *storageClassName
+```sh
+helm dependency build servarr/
+helm install servarr servarr/ --namespace servarr --create-namespace \
+  --values servarr/examples/minimal.yaml --timeout 20m
 ```
 
-</details>
+The example uses direct networking for qBittorrent. To enable VPN, also supply [examples/vpn.yaml](examples/vpn.yaml) with your relay's IPv4 /32, UDP port, VPN DNS resolver and required local subnets. Create the referenced Secret containing `wg0.conf` yourself. Its endpoint must match the policy address and port. The chart does not generate or register provider credentials.
 
----
+```sh
+kubectl -n servarr create secret generic servarr-wireguard --from-file=wg0.conf=/path/to/wg0.conf
+helm upgrade --install servarr servarr/ -n servarr \
+  -f servarr/examples/minimal.yaml -f servarr/examples/vpn.yaml --timeout 20m
+```
 
-## Values
+With VPN enabled, fresh qBittorrent configuration binds to `tun0`. Application startup waits for Gluetun health. Gluetun filters traffic, and a separate NetworkPolicy permits only the specified relay UDP endpoint. Configure VPN DNS in both Gluetun and the pod as shown in the example. Existing installations must already bind qBittorrent to `tun0` before enabling VPN; the startup check fails instead of silently changing saved configuration. Changes to a mounted WireGuard Secret require a qBittorrent pod restart to load the new profile.
 
-### Bazarr
+The original `qbittorrent.addons.gluetun.secret` inline profile mechanism remains available for compatibility, although an externally managed Secret is preferred. Do not enable two competing profile mounts.
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| bazarrSettings | list | English language profile with credential-free providers | Bazarr subtitle settings as form entries. Each entry is a [key, value] pair sent to the Bazarr settings API. |
+## Setup behavior
 
-### Global
+Two bounded Bun jobs replace the Python hooks and runtime pip installations. The pre-install/pre-upgrade job creates qBittorrent configuration only when its data directory is empty. Existing configuration is read and preserved byte for byte. An inconsistent nonempty directory fails setup rather than being reset.
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| global.certManagerClusterIssuer | string | No default value, leave empty if not required | Insert your cert manager cluster issuer, e.g.: letsencrypt-cloudflare. Do not remove the `&issuer` anchor! |
-| global.countryCode | string | US | Insert the Jellyfin country code |
-| global.externalUrl | string | http://servarr.local | Base external URL (protocol + host) used for Homarr external links |
-| global.ingressClassName | string | nginx | Insert your ingress class here, e.g.: &ingressClassName nginx. Do not remove the `&ingressCassName` anchor, and do not leave the anchor value empty, otherwise you will face a `null` value error! |
-| global.mail | string | `nil` | Insert Jellyfin login mail (also used for Jellyseerr integration) |
-| global.nodeSelector | object | {} | NodeSelector for init jobs and pre-deployment jobs. Ensures jobs run on same node as PVCs when using local-path storage. |
-| global.password | string | `nil` | Insert the shared Servarr password (used for Jellyfin, Jellyseerr, and qBitTorrent admin) |
-| global.preferredLanguage | string | en | Insert the Jellyfin preferred language |
-| global.storageClassName | string | `"network-block"` | Insert your storage class here, e.g.: &storageClassName network-block. Do not remove the `&storageClassName` anchor! |
-| global.username | string | `nil` | Insert the shared Servarr username (used for Jellyfin, Jellyseerr, and qBitTorrent admin) |
+The post-install/post-upgrade job reads API keys from read-only application config mounts, authenticates using the supplied credentials, creates missing integrations and categories, then tests qBittorrent connections from Sonarr, Radarr and Prowlarr. Existing integrations are preserved. Sonarr uses its TV category. Integration request fields come from each application's own API schema.
 
-### Prowlarr
+Seerr discovers and enables the selected Jellyfin library during initial setup. Existing library selections are preserved. Jellyfin's startup state is checked explicitly; setup creates its administrator only when the startup wizard is incomplete. Seerr uses that Jellyfin account and discovers available Sonarr/Radarr quality profiles. Choose profiles by name through `setup.seerr.sonarrProfile` and `radarrProfile`. The first available profile is used when no name is specified.
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| indexers | list | The body of the 1337x index is provided as default | The indexers list. Each element of the list is the yaml-formatted body of the [Prowlarr API request](https://prowlarr.com/docs/api/#/Indexer/post_api_v1_indexer) to add that index. |
+Useful settings:
 
-### Issuer
+- `setup.enabled`: disable all setup jobs for externally initialized applications. Pre-create valid qBittorrent configuration before starting it.
+- `setup.onUpgrade`: run setup checks on upgrade, enabled by default. Set false to run hooks only on installation.
+- `setup.timeoutSeconds`: bound each job's runtime; use a longer Helm timeout for initial image downloads.
+- `setup.paths`: Sonarr/Radarr root folders and remote path mapping. Match these to your actual volume mounts.
+- `setup.categories`: qBittorrent categories for each client.
+- `setup.mediaManagement`: optional Sonarr/Radarr defaults, applied only when no clients or root folders exist.
+- `setup.jellyfin`: library name, path and optional library settings.
+- `bazarrSettings`: form field/value pairs applied only before either Arr integration is configured. Providers requiring accounts must be configured by the operator.
+- `indexers`: explicit Prowlarr API request bodies. Defaults are empty; installation does not depend on a public indexer or a Cloudflare challenge succeeding.
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| issuer | object | See the sub fields | For tracking purpose, not used - replaced with pre-existing cluster issuer |
-| issuer.cloudFlareKey | string | `nil` | Insert your CloudFlare key |
-| issuer.email | string | `nil` | Insert your email address |
+Changing setup values does not rotate an existing password or overwrite user-edited integrations. Perform deliberate changes in the application's UI/API. Setup mounts must point to the same config claims as the applications; `persistence.config.existingClaim` overrides are respected. HostPath config storage and configuration stored outside these claims require external setup with `setup.enabled=false`.
 
-### Metrics
+## Upgrading from 1.x
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| metrics.enabled | bool | `false` | Anchor to set wether to deploy the export sidecar pods or not. Requires the Prometheus stack. Do not remove the `&metricsEnabled` anchor! |
+This is a major chart version because setup behavior and defaults changed. If you currently use Homarr, explicitly keep `homarr.enabled: true` in your upgrade values; otherwise the new disabled default removes its chart-managed resources. Check existing claim retention before disabling it. Preserve existing claim names, volume mappings, API keys and application placement. Compare a server dry run against fresh installed values before applying. Do not reuse a historical full values snapshot over newer configuration.
 
-### Jellyseerr
+Jellyfin 12 changes the database and authorization behavior. Changing the image back does not undo that migration. Review plugin compatibility and perform a full library scan after upgrading, as described in the [Jellyfin release notes](https://github.com/jellyfin/jellyfin/releases/tag/v12.0). The isolated migration test used a synthetic media file; it does not establish compatibility for every external plugin or library.
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| notifications.telegram.bot_apitoken | string | No default value | Insert your Telegram Bot API token |
-| notifications.telegram.chat_id | string | No default value | Insert the Telegram Chat id, check @get_id_bot for this |
-| notifications.telegram.enabled | bool | `true` | Enable the Telegram notifications |
+Removed code includes eight duplicated Python scripts, seven per-application jobs, an inactive issuer template, a bundled public-indexer response and a sample Homarr dashboard. The Gluetun control service retains its existing name and selector, with a guard against duplicate emission by the port-forwarding subchart. Homarr automatic owner/dashboard setup was retired with that legacy dashboard code; use Homarr's own setup UI if you enable the optional chart. Homarr itself was not upgraded or runtime-validated in this run. Existing dashboards and claims are not reset by the new setup code.
 
-### Torrent
+Sonarr and Bazarr retain UID/GID 568 with read-only roots using a dedicated writable S6 runtime directory. Their publisher does not generally support combined nonroot and read-only mode; repeat startup tests when changing images. Seerr has a dedicated writable image-cache directory. Bazarr's discontinued Podnapisi provider is no longer supplied as a default. FlareSolverr's existing Cloudflare challenge timeout remains a known limitation.
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| qbittorrent.csrf_protection | bool | false | Whether to enable or disable CSRF Protection on qBitTorrent WebGUI |
+The old shared PVCs were created as hooks and remain retained hooks to preserve ownership. They are not deleted on hook failure. Existing claims are reused; disabling creation does not delete an existing claim. Removing a Helm release does not automatically clean up retained hook resources. Setup Secret/ConfigMap/jobs use release-prefixed names in 2.0; old fixed-name setup hooks may be removed manually after a successful upgrade when no other release uses them.
 
-### Storage
+## Validation and development
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| volumes.accessModes | list | `["ReadWriteMany"]` | Access mode for shared PVCs. Use ReadWriteOnce for local-path, ReadWriteMany for network storage |
-| volumes.downloads | object | See the sub fields | configuration of the volume used for torrent downloads |
-| volumes.downloads.enabled | bool | `true` | Enable creation of downloads PVC. Set to false to use hostPath instead |
-| volumes.downloads.name | string | `"downloads-volume"` | Name of the download pvc. Do not remove the `&downloads-volume` anchor! |
-| volumes.downloads.size | string | `"100Gi"` | Size of the downloads volume, in Kubernets format |
-| volumes.media | object | See the sub fields | configuration of the volume used for media storage (i.e.: where movies and tv shows file will be permanently stored) |
-| volumes.media.enabled | bool | `true` | Enable creation of media PVC. Set to false to use hostPath instead |
-| volumes.media.name | string | `"media-volume"` | Name of the media pvc. Do not remove the `&media-volume` anchor! |
-| volumes.media.size | string | `"250Gi"` | Size of the media volume, in Kubernets format |
-| volumes.torrentConfig | object | See the sub fields | configuration of the volume used for qBitTorrent internal configuration |
-| volumes.torrentConfig.enabled | bool | `true` | Enable creation of torrent config PVC. Set to false to manage separately |
-| volumes.torrentConfig.name | string | `"torrent-config"` | Name of the torrent configuration pvc. Do not remove the `&torrentConfig` anchor! |
-| volumes.torrentConfig.size | string | `"50Mi"` | Size of the torrent configuration volume, in Kubernets format |
-| volumes.vctAccessModes | list | `["ReadWriteMany"]` | Access mode for VCT (volume claim templates). Same as accessModes if not specified |
+Use Bun for scripts and tests. No runtime package installation is required.
 
+```sh
+helm dependency build servarr/
+bun test tests
+helm lint servarr/ -f .github/ci/ci-values.yaml
+helm template servarr servarr/ -f .github/ci/ci-values.yaml
+helm package servarr/
+```
 
-----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
+Unit and render tests check repeated setup, saved configuration, authentication, API schema compatibility, release/namespace portability, Secret references and VPN policy rendering. The CI workflow also runs `bun run test:install`, which owns and removes a disposable Docker/K3s cluster. Full installation results are recorded in [VALIDATION.md](VALIDATION.md). Runtime acceptance of the Pi overlay does not substitute for a fresh-install check of this chart.

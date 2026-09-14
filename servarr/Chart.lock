@@ -1,0 +1,30 @@
+dependencies:
+- name: sonarr
+  repository: oci://oci.trueforge.org/truecharts
+  version: 25.0.1
+- name: radarr
+  repository: oci://oci.trueforge.org/truecharts
+  version: 26.0.0
+- name: bazarr
+  repository: oci://oci.trueforge.org/truecharts
+  version: 23.0.0
+- name: prowlarr
+  repository: oci://oci.trueforge.org/truecharts
+  version: 21.0.0
+- name: qbittorrent
+  repository: oci://oci.trueforge.org/truecharts
+  version: 24.0.0
+- name: jellyseerr
+  repository: oci://oci.trueforge.org/truecharts
+  version: 13.11.3
+- name: jellyfin
+  repository: oci://oci.trueforge.org/truecharts
+  version: 21.12.6
+- name: homarr
+  repository: oci://oci.trueforge.org/truecharts
+  version: 11.0.0
+- name: flaresolverr
+  repository: oci://oci.trueforge.org/truecharts
+  version: 16.12.5
+digest: sha256:52d6a7a3247c5258fa58f1fb1325b7624c29c7220e7bdb12e52d79f11efae12b
+generated: "2026-09-14T16:06:54.565388+12:00"

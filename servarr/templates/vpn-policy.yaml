@@ -1,0 +1,31 @@
+{{- if .Values.qbittorrent.addons.gluetun.enabled }}
+{{- $vpn := .Values.qbittorrent.vpn }}
+{{- $cidr := required "VPN requires qbittorrent.vpn.endpointCIDR for the relay IPv4 /32" $vpn.endpointCIDR }}
+{{- if not (regexMatch "^([0-9]{1,3}\\.){3}[0-9]{1,3}/32$" $cidr) }}
+{{- fail "VPN endpointCIDR must be a single IPv4 relay /32" }}
+{{- end }}
+{{- range $octet := splitList "." (trimSuffix "/32" $cidr) }}
+{{- if gt (atoi $octet) 255 }}{{ fail "VPN endpointCIDR has an invalid IPv4 octet" }}{{ end }}
+{{- end }}
+{{- if or (ne .Values.qbittorrent.podOptions.dnsPolicy "None") (not (has $vpn.dns .Values.qbittorrent.podOptions.dnsConfig.nameservers)) }}
+{{- fail "VPN requires podOptions.dnsPolicy=None and its configured VPN DNS in dnsConfig.nameservers" }}
+{{- end }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-qbittorrent-vpn-egress
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: qbittorrent
+      pod.name: main
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - ipBlock:
+            cidr: {{ $cidr }}
+      ports:
+        - protocol: UDP
+          port: {{ $vpn.endpointPort }}
+{{- end }}

@@ -1,0 +1,27 @@
+name: Chart tests
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+jobs:
+  chart:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4.1.0
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.0
+      - run: helm dependency build servarr/
+      - run: bun run check
+      - name: Chart schema and YAML lint
+        run: >-
+          docker run --rm --workdir /work
+          --mount type=bind,src="$GITHUB_WORKSPACE",dst=/work,readonly
+          quay.io/helmpack/chart-testing:v3.14.0@sha256:425ff3058dfc192fffb94e471e732b9bc995c375df963eba417ff01aea594e83
+          ct lint --chart-dirs=servarr/ --charts=servarr/
+          --validate-maintainers=false --skip-helm-dependencies
+      - run: bun run test:install
+      - run: helm package servarr/ --destination /tmp/chart-package
