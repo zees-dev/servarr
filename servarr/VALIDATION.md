@@ -1,11 +1,11 @@
-# Chart 2.0.0 validation
+# Chart 2.0.1 validation
 
-Validated on 2026-09-14 in disposable ARM64 Kubernetes and the existing Pi K3s cluster. The Pi now runs chart 2.0.0 and all enabled services at the versions listed in the README. No service backup or SSD migration was performed.
+Validated on 2026-09-14 in disposable ARM64 Kubernetes and the existing Pi K3s cluster. The existing Pi service upgrade was accepted on chart 2.0.0 with the service versions listed in the README. Chart 2.0.1 fixes Helm 4.3 scheduling compatibility while retaining those application versions. No service backup or SSD migration was performed.
 
 | Check | Result |
 | --- | --- |
 | Dependency download from the current TrueCharts registry | All nine pinned charts downloaded; dependency lock recorded |
-| Bun unit and render tests | 17 tests, 90 assertions passed |
+| Bun unit and render tests | 18 tests, 141 assertions passed on Helm 3.19.0, 4.1.3 and 4.3.0 |
 | Helm lint with CI values | Passed |
 | Chart Testing 3.14.0 schema and YAML lint | Passed; skipped dependency rebuilding on the read-only mount after separately verifying downloads |
 | Minimal and VPN examples, alternate release/namespace | Rendered successfully |
@@ -31,7 +31,7 @@ Jellyfin 12 requires the current Authorization header; the existing saved API ke
 
 Limits:
 
-- Runtime tests ran on ARM64. The added GitHub Actions job targets AMD64 Linux but has not been run remotely from this checkout.
+- Local runtime tests use ARM64. [Chart tests](https://github.com/zees-dev/servarr/actions/workflows/chart-test.yaml) check rendering on Helm 3.19.0 and 4.3.0 and run a complete fresh install and repeat upgrade on AMD64 with Helm 4.3.0. The workflow run is the authoritative remote result.
 - VPN values were rendered and checked for the external Secret mount, resolver, health gate and restrictive NetworkPolicy. The prior Pi run validated these pinned qBittorrent/Gluetun versions with a real Mullvad profile, including tunnel loss and reconnection. The current profile was also revalidated after the Jellyfin rollout.
 - A clean install cannot prove every operator's existing library, plugin, storage provisioner or ingress configuration will migrate. Both synthetic and existing-library Jellyfin migrations passed; third-party plugins, hardware transcoding and real torrent payload transfer were not tested.
 - Homarr remains optional and disabled by default. Its legacy automatic dashboard setup was retired; Homarr itself was not upgraded or runtime-tested.

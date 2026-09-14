@@ -2,7 +2,7 @@
 
 A Helm chart for Sonarr, Radarr, Prowlarr, Bazarr, qBittorrent, Jellyfin, Seerr and FlareSolverr. Homarr is optional and disabled by default.
 
-Chart 2.0.0 brings the validated service versions into public defaults and replaces duplicated setup hooks with repeatable Bun automation. It preserves existing credentials and configuration. VPN settings and Secrets are supplied by the operator.
+Chart 2.0.1 brings the validated service versions into public defaults and replaces duplicated setup hooks with repeatable Bun automation. It preserves existing credentials and configuration. VPN settings and Secrets are supplied by the operator.
 
 Read the [chart documentation](servarr/README.md), start with [example values](servarr/examples/minimal.yaml), and review [validation results](servarr/VALIDATION.md) before upgrading. Image defaults are pinned to tested versions. Jellyfin 12.0 passed both disposable migration tests and the existing Pi library upgrade.
 

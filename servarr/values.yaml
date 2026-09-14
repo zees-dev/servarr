@@ -104,10 +104,12 @@ volumes:
     # @section -- Storage
     size: 1Gi
 
+# Empty values override the common chart architecture default; Helm 4.3 removes
+# null defaults before that chart merges its values.
 # @ignore
 sonarr:
   podOptions:
-    nodeSelector: null
+    nodeSelector: {kubernetes.io/arch: ""}
   # @ignore
   metrics:
     main:
@@ -246,7 +248,7 @@ sonarr:
     tag: version-4.0.19.2979@sha256:82172b363f9eddc02aca544f880a044f2ceb9aaf190bc87e4454e2f705eb91d0
 radarr:
   podOptions:
-    nodeSelector: null
+    nodeSelector: {kubernetes.io/arch: ""}
   # @ignore
   metrics:
     main:
@@ -330,7 +332,7 @@ bazarrSettings:
     - "true"
 bazarr:
   podOptions:
-    nodeSelector: null
+    nodeSelector: {kubernetes.io/arch: ""}
   # @ignore
   metrics:
     main:
@@ -462,7 +464,7 @@ bazarr:
                 memory: 64Mi
 jellyfin:
   podOptions:
-    nodeSelector: null
+    nodeSelector: {kubernetes.io/arch: ""}
   metrics:
     main:
       enabled: *metricsEnabled
@@ -608,7 +610,7 @@ jellyfin:
     tag: 12.0@sha256:74f4d87d9cf262c52d62be6be265c0355c6a7e21d0477ab6c654a49a4f8b1fd4
 jellyseerr:
   podOptions:
-    nodeSelector: null
+    nodeSelector: {kubernetes.io/arch: ""}
   metrics:
     main:
       enabled: *metricsEnabled
@@ -707,7 +709,7 @@ jellyseerr:
     tag: v3.4.1@sha256:f4768de5f616248d723e05891f3345a1402123775d03bf0890dbfedc0831bda1
 homarr:
   podOptions:
-    nodeSelector: null
+    nodeSelector: {kubernetes.io/arch: ""}
   enabled: false
   securityContext:
     pod:
@@ -782,7 +784,7 @@ homarr:
 
 qbittorrent:
   podOptions:
-    nodeSelector: null
+    nodeSelector: {kubernetes.io/arch: ""}
   # -- Whether to enable or disable CSRF Protection on qBitTorrent WebGUI
   # @section -- Torrent
   # @default -- true
@@ -931,7 +933,7 @@ qbittorrent:
       enabled: false
 prowlarr:
   podOptions:
-    nodeSelector: null
+    nodeSelector: {kubernetes.io/arch: ""}
   metrics:
     main:
       enabled: *metricsEnabled
@@ -988,7 +990,7 @@ prowlarr:
     tag: 2.5.2.5491@sha256:10d3a49f86152c49a71348b8a4bb58792fcab38fc43876171cea81dc71e4a182
 flaresolverr:
   podOptions:
-    nodeSelector: null
+    nodeSelector: {kubernetes.io/arch: ""}
   metrics:
     main:
       enabled: *metricsEnabled

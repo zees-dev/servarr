@@ -4,7 +4,7 @@ Servarr installs Sonarr, Radarr, Prowlarr, Bazarr, qBittorrent, Jellyfin, Seerr 
 
 ## Versions
 
-Chart 2.0.0 pins the latest stable application versions checked on 2026-09-14 by version and digest. These versions passed the Pi service upgrades and disposable fresh-install tests. Enable Renovate for this repository to receive image, chart and GitHub Action update PRs; validate and deploy each accepted update.
+Chart 2.0.1 pins the latest stable application versions checked on 2026-09-14 by version and digest. These versions passed the Pi service upgrades and disposable fresh-install tests. Enable Renovate for this repository to receive image, chart and GitHub Action update PRs; validate and deploy each accepted update.
 
 | Component | Default |
 | --- | --- |
@@ -29,8 +29,8 @@ Create a Secret in the intended namespace with keys `username`, `password` and `
 Start with [examples/minimal.yaml](examples/minimal.yaml). Change its storage class, capacities and credentials Secret name. YAML anchors apply within one file only; changing `global.storageClassName` in an overlay does not update aliases that were already expanded from another file. The example explicitly sets the affected claims.
 
 ```sh
-helm dependency build servarr/
-helm install servarr servarr/ --namespace servarr --create-namespace \
+helm install servarr oci://ghcr.io/zees-dev/servarr --version 2.0.1 \
+  --namespace servarr --create-namespace \
   --values servarr/examples/minimal.yaml --timeout 20m
 ```
 
@@ -38,8 +38,8 @@ The example uses direct networking for qBittorrent. To enable VPN, also supply [
 
 ```sh
 kubectl -n servarr create secret generic servarr-wireguard --from-file=wg0.conf=/path/to/wg0.conf
-helm upgrade --install servarr servarr/ -n servarr \
-  -f servarr/examples/minimal.yaml -f servarr/examples/vpn.yaml --timeout 20m
+helm upgrade --install servarr oci://ghcr.io/zees-dev/servarr --version 2.0.1 \
+  -n servarr -f servarr/examples/minimal.yaml -f servarr/examples/vpn.yaml --timeout 20m
 ```
 
 With VPN enabled, fresh qBittorrent configuration binds to `tun0`. Application startup waits for Gluetun health. Gluetun filters traffic, and a separate NetworkPolicy permits only the specified relay UDP endpoint. Configure VPN DNS in both Gluetun and the pod as shown in the example. Existing installations must already bind qBittorrent to `tun0` before enabling VPN; the startup check fails instead of silently changing saved configuration. Changes to a mounted WireGuard Secret require a qBittorrent pod restart to load the new profile.

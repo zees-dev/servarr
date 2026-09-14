@@ -8,9 +8,15 @@ jobs:
   chart:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        helm-version: [v3.19.0, v4.3.0]
     steps:
       - uses: actions/checkout@v4
       - uses: azure/setup-helm@v4.1.0
+        with:
+          version: ${{ matrix.helm-version }}
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.0
@@ -23,5 +29,6 @@ jobs:
           quay.io/helmpack/chart-testing:v3.14.0@sha256:425ff3058dfc192fffb94e471e732b9bc995c375df963eba417ff01aea594e83
           ct lint --chart-dirs=servarr/ --charts=servarr/
           --validate-maintainers=false --skip-helm-dependencies
-      - run: bun run test:install
+      - if: matrix.helm-version == 'v4.3.0'
+        run: bun run test:install
       - run: helm package servarr/ --destination /tmp/chart-package

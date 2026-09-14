@@ -37,7 +37,23 @@ test('external credentials and disabled setup avoid chart-generated credentials'
   const off=render(['--set','setup.enabled=false']);expect(off.code).toBe(0);expect(off.docs.filter(d=>d.kind==='Job')).toHaveLength(0);
 });
 test('VPN refuses a missing relay policy address',()=>{const r=render(['--set','qbittorrent.addons.gluetun.enabled=true']);expect(r.code).not.toBe(0);expect(r.error).toContain('endpointCIDR');});
-test('default scheduling is portable across ARM64 and AMD64',()=>{const r=render();expect(r.code).toBe(0);for(const d of r.docs.filter(d=>d.kind==='Deployment'))expect(d.spec.template.spec.nodeSelector?.['kubernetes.io/arch']).toBeUndefined();});
+test('default scheduling is portable across ARM64 and AMD64, including optional Homarr',()=>{
+  for(const enabled of [false,true]){
+    const r=render(['--set','homarr.enabled='+enabled]);expect(r.code).toBe(0);
+    const deployments=r.docs.filter(d=>d.kind==='Deployment');expect(deployments).toHaveLength(enabled?9:8);
+    for(const d of deployments)expect(d.spec.template.spec.nodeSelector??{}).toEqual({});
+  }
+});
+test('operator selectors preserve architecture and hostname without inheriting a default architecture',()=>{
+  const apps=['sonarr','radarr','bazarr','prowlarr','qbittorrent','jellyfin','jellyseerr','flaresolverr','homarr'];
+  for(const arch of [undefined,'arm64','amd64']){
+    const selector={'kubernetes.io/hostname':'operator-node',...(arch?{'kubernetes.io/arch':arch}:{})};
+    const r=render(['--set','homarr.enabled=true','--set-json','global.nodeSelector='+JSON.stringify(selector),...apps.flatMap(app=>['--set-json',app+'.podOptions.nodeSelector='+JSON.stringify(selector)])]);
+    expect(r.code).toBe(0);
+    const workloads=r.docs.filter(d=>d.kind==='Deployment'||d.kind==='Job');expect(workloads).toHaveLength(11);
+    for(const d of workloads)expect(d.spec.template.spec.nodeSelector).toEqual(selector);
+  }
+});
 test('invalid VPN address and resolver configuration fail rendering',()=>{
   for(const args of [['--set','qbittorrent.vpn.endpointCIDR=999.1.1.1/32'],['--set','qbittorrent.podOptions.dnsPolicy=ClusterFirst']]){const r=render(['-f','servarr/examples/vpn.yaml',...args]);expect(r.code).not.toBe(0);}
 });
