@@ -76,3 +76,31 @@ test('Gluetun control service exists exactly once with or without port forwardin
     expect(services[0].spec.ports[0].port).toBe(8000);
   }
 });
+test('reconcile is opt-in, credential-free and reruns only when its input changes', () => {
+  expect(render().docs.some(d => d.metadata.name.startsWith('custom-release-reconcile'))).toBe(false);
+  const on = ['--set', 'reconcile.enabled=true', '--set', 'reconcile.radarr.bazarrWebhook=true', '--set-json', 'reconcile.radarr.config={"mediamanagement":{"importExtraFiles":false}}'];
+  const r = render(on); expect(r.error).toBe(''); expect(r.code).toBe(0);
+  const job = r.docs.find(d => d.kind === 'Job' && d.metadata.name.startsWith('custom-release-reconcile-')) as Manifest & { kind: 'Job'; spec: { template: { spec: Pod & { containers: (Container & { volumeMounts: { name: string; readOnly?: boolean }[] })[] } } } };
+  expect(job).toBeDefined();
+  const container = job.spec.template.spec.containers[0];
+  expect(container.env ?? []).toEqual([]);
+  expect(container.volumeMounts.filter(m => m.name.endsWith('-config')).map(m => [m.name, m.readOnly])).toEqual([['sonarr-config', true], ['radarr-config', true], ['bazarr-config', true]]);
+  expect(job.spec.template.spec.automountServiceAccountToken).toBe(false);
+  const settings = JSON.parse(r.docs.find((d): d is Manifest & ConfigMap => d.kind === 'ConfigMap' && d.metadata.name === 'custom-release-reconcile')!.data['reconcile.json']);
+  expect(settings.urls.bazarr).toBe('http://custom-release-bazarr.custom-namespace.svc.cluster.local:6767');
+  expect(settings.arr.radarr).toEqual({ config: { mediamanagement: { importExtraFiles: false } }, bazarrWebhook: true });
+  expect(render(on).docs.find(d => d.kind === 'Job' && d.metadata.name.startsWith('custom-release-reconcile-'))!.metadata.name).toBe(job.metadata.name);
+  const changed = render([...on, '--set', 'reconcile.sonarr.bazarrWebhook=true']).docs.find(d => d.kind === 'Job' && d.metadata.name.startsWith('custom-release-reconcile-'))!;
+  expect(changed.metadata.name).not.toBe(job.metadata.name);
+});
+test('reconcile schema rejects unsafe config kinds and unknown keys', () => {
+  for (const args of [['--set-json', 'reconcile.radarr.config={"../system":{}}'], ['--set', 'reconcile.radarr.webhook=true'], ['--set', 'reconcile.enabled=yes']]) {
+    expect(render(['--set', 'reconcile.enabled=true', ...args]).code).not.toBe(0);
+  }
+});
+test('reconcile Job is renamed when its immutable pod template changes', () => {
+  const on = ['--set', 'reconcile.enabled=true', '--set', 'reconcile.radarr.bazarrWebhook=true'];
+  const name = (extra: string[]) => render([...on, ...extra]).docs.find(d => d.kind === 'Job' && d.metadata.name.startsWith('custom-release-reconcile-'))!.metadata.name;
+  const base = name([]);
+  for (const extra of [['--set', 'setup.image=oven/bun:9.9.9'], ['--set', 'radarr.persistence.config.existingClaim=other-claim'], ['--set-json', 'global.nodeSelector={"kubernetes.io/hostname":"node-b"}']]) expect(name(extra)).not.toBe(base);
+});

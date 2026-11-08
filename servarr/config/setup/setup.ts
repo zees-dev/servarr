@@ -28,6 +28,12 @@ export interface Settings {
   csrf: boolean;
   qbitPort: number;
 }
+export type ArrApp = 'sonarr' | 'radarr';
+export interface ReconcileSettings {
+  urls: Record<string, string>;
+  timeoutSeconds: number;
+  arr: Record<ArrApp, { config: Record<string, ObjectValue>; bazarrWebhook: boolean }>;
+}
 export class SetupError extends Error {}
 export class API {
   constructor(readonly base: string, readonly headers: Record<string, string> = {}) {}
@@ -135,12 +141,12 @@ export async function setupProwlarr(api: API, config: Pick<Settings, 'urls' | 'c
   await integration(api, '/downloadclient', 'QBittorrent', 'qBittorrent', {
     host: new URL(config.urls.qbittorrent).hostname, port: Number(new URL(config.urls.qbittorrent).port), username: credentials.username, password: credentials.password, category: config.categories.prowlarr,
   }, { enable: true, priority: 1 });
-  await integration(api, '/indexerProxy', 'FlareSolverr', 'FlareSolverr', { host: config.urls.flaresolverr, requestTimeout: 60 }, { tags: [] });
+  // Challenge solves take about 50 s on a Raspberry Pi 4; 60 s timed out intermittently.
+  await integration(api, '/indexerProxy', 'FlareSolverr', 'FlareSolverr', { host: config.urls.flaresolverr, requestTimeout: 120 }, { tags: [] });
   for (const indexer of config.indexers) await ensureResource<{ name: string }>(api, '/indexer', r => r.name === indexer.name, async () => ({ ...indexer.body, name: indexer.name }));
 }
 async function setupBazarr(config: Settings, directory: string, keys: Record<string, string>) {
-  const saved = await waitFor(async () => { const value = Bun.YAML.parse(await Bun.file(directory + '/bazarr/config/config.yaml').text()) as BazarrConfig; if (!value?.auth?.apikey) throw new SetupError('Bazarr API key unavailable'); return value; }, config.timeoutSeconds);
-  const api = new API(config.urls.bazarr + '/api', { 'X-Api-Key': saved.auth.apikey });
+  const api = new API(config.urls.bazarr + '/api', { 'X-Api-Key': await readBazarrKey(directory, config.timeoutSeconds) });
   await waitFor(() => api.request('/system/status'), config.timeoutSeconds);
   const current = await api.request<BazarrIntegrations>('/system/settings');
   const form = new URLSearchParams();
@@ -214,6 +220,59 @@ export async function setupSeerr(config: Pick<Settings, 'urls' | 'paths' | 'time
     await api.request('/settings/initialize', 'POST', {});
   }
 }
+// Bazarr reads movieFile from Radarr import/upgrade events and the episodeFiles list that
+// only Sonarr's import-complete event carries.
+const bazarrEvents: Record<ArrApp, string[]> = { radarr: ['onDownload', 'onUpgrade'], sonarr: ['onImportComplete'] };
+const sameValue = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+export async function reconcileConfig(api: API, kind: string, desired: ObjectValue) {
+  if (!/^[a-z]+$/.test(kind)) throw new SetupError(`Invalid config kind: ${kind}`);
+  const current = await api.request<ObjectValue & { id: number }>('/config/' + kind);
+  for (const key of Object.keys(desired)) if (!Object.hasOwn(current, key)) throw new SetupError(`Unsupported ${kind} setting: ${key}`);
+  const changed = Object.keys(desired).filter((key) => !sameValue(current[key], desired[key]));
+  if (changed.length) await api.request(`/config/${kind}/${current.id}`, 'PUT', { ...current, ...desired });
+  return changed;
+}
+type Notification = Integration & ObjectValue;
+export async function reconcileBazarrWebhook(app: ArrApp, api: API, bazarrUrl: string, bazarrKey: string) {
+  const url = `${bazarrUrl}/api/webhooks/${app}`;
+  const schema = (await api.request<Notification[]>('/notification/schema')).find((row) => row.implementation === 'Webhook');
+  if (!schema) throw new SetupError(`Integration schema unavailable: ${app} Webhook`);
+  const events = Object.fromEntries(Object.keys(schema).filter((key) => /^on[A-Z]/.test(key)).map((key) => [key, bazarrEvents[app].includes(key)]));
+  for (const event of bazarrEvents[app]) if (!Object.hasOwn(events, event)) throw new SetupError(`Unsupported ${app} webhook event: ${event}`);
+  const fields: ObjectValue = { url, method: 1, headers: [{ key: 'X-API-KEY', value: bazarrKey }] };
+  const existing = (await api.request<Notification[]>('/notification')).find((row) =>
+    row.implementation === 'Webhook' && row.fields.some((field) => field.name === 'url' && field.value === url));
+  if (!existing) {
+    await api.request('/notification', 'POST', { ...schemaFields(schema, fields), ...events, name: 'Bazarr', tags: [] });
+    return 'created';
+  }
+  const current = (name: string) => existing.fields.find((field) => field.name === name)?.value;
+  if (Object.entries(events).every(([key, on]) => existing[key] === on) && Object.entries(fields).every(([key, value]) => sameValue(current(key), value))) return 'unchanged';
+  await api.request(`/notification/${existing.id}`, 'PUT', { ...existing, ...events, fields: existing.fields.map((field) => Object.hasOwn(fields, field.name) ? { ...field, value: fields[field.name] } : field) });
+  return 'updated';
+}
+async function readBazarrKey(directory: string, seconds: number) {
+  return waitFor(async () => {
+    const saved = Bun.YAML.parse(await Bun.file(directory + '/bazarr/config/config.yaml').text()) as BazarrConfig;
+    if (!saved?.auth?.apikey) throw new SetupError('Bazarr API key unavailable');
+    return saved.auth.apikey;
+  }, seconds);
+}
+// Converges declared settings on existing installations using only saved API keys.
+export async function reconcile(config: ReconcileSettings, directory: string) {
+  const apps = (['sonarr', 'radarr'] as const).filter((app) => Object.keys(config.arr[app].config).length || config.arr[app].bazarrWebhook);
+  const bazarrKey = apps.some((app) => config.arr[app].bazarrWebhook) ? await readBazarrKey(directory, config.timeoutSeconds) : '';
+  for (const app of apps) {
+    const api = new API(config.urls[app] + '/api/v3', { 'X-Api-Key': await waitFor(() => readKey(app, directory), config.timeoutSeconds) });
+    await waitFor(() => api.request('/system/status'), config.timeoutSeconds);
+    for (const [kind, desired] of Object.entries(config.arr[app].config)) {
+      const changed = await reconcileConfig(api, kind, desired);
+      console.log(`${app} ${kind}: ${changed.length ? 'updated ' + changed.join(', ') : 'unchanged'}`);
+    }
+    if (config.arr[app].bazarrWebhook) console.log(`${app} Bazarr webhook: ${await reconcileBazarrWebhook(app, api, config.urls.bazarr, bazarrKey)}`);
+  }
+  console.log('Reconcile completed');
+}
 export async function configure(config: Settings, credentials: Credentials, directory: string) {
   const keys: Record<string, string> = {}, arr: Record<string, API> = {};
   for (const app of ['sonarr', 'radarr', 'prowlarr']) {
@@ -237,11 +296,15 @@ export async function configure(config: Settings, credentials: Credentials, dire
 }
 if (import.meta.main) {
   try {
-    const config: Settings = await Bun.file(process.env.SETUP_CONFIG ?? '/setup/settings.json').json();
-    const credentials = { username: process.env.SERVARR_USERNAME ?? '', password: process.env.SERVARR_PASSWORD ?? '', mail: process.env.SERVARR_MAIL ?? '' };
-    if (!credentials.username || credentials.password.length < 8) throw new SetupError('Setup credentials are missing or invalid');
-    if (Bun.argv[2] === 'prepare-qbittorrent') console.log(await prepareQbit('/config', credentials.username, credentials.password, config.vpn, config.csrf, config.qbitPort));
-    else await configure(config, credentials, process.env.CONFIG_ROOT ?? '/configs');
+    if (Bun.argv[2] === 'reconcile') {
+      await reconcile(await Bun.file(process.env.RECONCILE_CONFIG ?? '/reconcile/reconcile.json').json(), process.env.CONFIG_ROOT ?? '/configs');
+    } else {
+      const config: Settings = await Bun.file(process.env.SETUP_CONFIG ?? '/setup/settings.json').json();
+      const credentials = { username: process.env.SERVARR_USERNAME ?? '', password: process.env.SERVARR_PASSWORD ?? '', mail: process.env.SERVARR_MAIL ?? '' };
+      if (!credentials.username || credentials.password.length < 8) throw new SetupError('Setup credentials are missing or invalid');
+      if (Bun.argv[2] === 'prepare-qbittorrent') console.log(await prepareQbit('/config', credentials.username, credentials.password, config.vpn, config.csrf, config.qbitPort));
+      else await configure(config, credentials, process.env.CONFIG_ROOT ?? '/configs');
+    }
   } catch (error) {
     // Library errors may contain tokens or response bodies. Only our fixed messages are exposed.
     console.error(error instanceof SetupError ? error.message : 'Servarr setup failed. Check service readiness, configuration and supplied credentials.');

@@ -4,7 +4,7 @@ Servarr installs Sonarr, Radarr, Prowlarr, Bazarr, qBittorrent, Jellyfin, Seerr 
 
 ## Versions
 
-Chart 2.0.1 pins the latest stable application versions checked on 2026-09-14 by version and digest. These versions passed the Pi service upgrades and disposable fresh-install tests. Enable Renovate for this repository to receive image, chart and GitHub Action update PRs; validate and deploy each accepted update.
+Chart 2.1.0 keeps the application versions pinned and checked for 2.0.1 on 2026-09-14 by version and digest. These versions passed the Pi service upgrades and disposable fresh-install tests. Enable Renovate for this repository to receive image, chart and GitHub Action update PRs; validate and deploy each accepted update.
 
 | Component | Default |
 | --- | --- |
@@ -29,7 +29,7 @@ Create a Secret in the intended namespace with keys `username`, `password` and `
 Start with [examples/minimal.yaml](examples/minimal.yaml). Change its storage class, capacities and credentials Secret name. YAML anchors apply within one file only; changing `global.storageClassName` in an overlay does not update aliases that were already expanded from another file. The example explicitly sets the affected claims.
 
 ```sh
-helm install servarr oci://ghcr.io/zees-dev/servarr --version 2.0.1 \
+helm install servarr oci://ghcr.io/zees-dev/servarr --version 2.1.0 \
   --namespace servarr --create-namespace \
   --values servarr/examples/minimal.yaml --timeout 20m
 ```
@@ -38,7 +38,7 @@ The example uses direct networking for qBittorrent. To enable VPN, also supply [
 
 ```sh
 kubectl -n servarr create secret generic servarr-wireguard --from-file=wg0.conf=/path/to/wg0.conf
-helm upgrade --install servarr oci://ghcr.io/zees-dev/servarr --version 2.0.1 \
+helm upgrade --install servarr oci://ghcr.io/zees-dev/servarr --version 2.1.0 \
   -n servarr -f servarr/examples/minimal.yaml -f servarr/examples/vpn.yaml --timeout 20m
 ```
 
@@ -64,9 +64,19 @@ Useful settings:
 - `setup.mediaManagement`: optional Sonarr/Radarr defaults, applied only when no clients or root folders exist.
 - `setup.jellyfin`: library name, path and optional library settings.
 - `bazarrSettings`: form field/value pairs applied only before either Arr integration is configured. Providers requiring accounts must be configured by the operator.
+- `reconcile`: declared Sonarr/Radarr settings and Bazarr webhooks converged on every change; see below.
 - `indexers`: explicit Prowlarr API request bodies. Defaults are empty; installation does not depend on a public indexer or a Cloudflare challenge succeeding.
 
-Changing setup values does not rotate an existing password or overwrite user-edited integrations. Perform deliberate changes in the application's UI/API. Setup mounts must point to the same config claims as the applications; `persistence.config.existingClaim` overrides are respected. HostPath config storage and configuration stored outside these claims require external setup with `setup.enabled=false`.
+Changing setup values does not rotate an existing password or overwrite user-edited integrations. Perform deliberate changes in the application's UI/API, or declare them under `reconcile`. Setup mounts must point to the same config claims as the applications; `persistence.config.existingClaim` overrides are respected. HostPath config storage and configuration stored outside these claims require external setup with `setup.enabled=false`.
+
+## Declarative reconcile
+
+Setup creates missing resources and leaves existing ones alone. For settings that must stay as declared on existing installations, enable `reconcile`. Its job mounts the Sonarr, Radarr and Bazarr config claims read-only, reads their API keys and needs no user credentials or Helm hooks. The job name includes a digest of its script, settings and pod template, so Helm replaces and reruns it whenever any of them changes. Unchanged values leave the completed job in place: to re-apply after edits in an application or a Bazarr key rotation, delete the completed `<release>-reconcile-*` job and rerun `helm upgrade`, which recreates it. Helm does not wait for this job; check its status and log after each upgrade.
+
+- `reconcile.<app>.config.<kind>`: keys merged into `/api/v3/config/<kind>` (for example `mediamanagement`, `indexer` or `naming`). Only differing keys are written. Unknown keys fail the job instead of being ignored.
+- `reconcile.<app>.bazarrWebhook`: a Webhook connection to Bazarr's `/api/webhooks/<app>` with its API key in the `X-API-KEY` header. Radarr notifies on file import and upgrade, Sonarr on import complete, the only Sonarr event carrying the episode file list Bazarr reads. Bazarr then indexes existing subtitles and downloads missing ones for that item immediately instead of on its periodic search.
+
+Pair the webhook with `config.mediamanagement.importExtraFiles: false`: release-shipped `.srt` files usually have no language tag, so players cannot select them by language, and Bazarr treats them as present. Settings removed from values are not reverted, and connections are matched by Bazarr URL, so renaming one keeps it.
 
 ## Upgrading from 1.x
 
@@ -76,7 +86,7 @@ Jellyfin 12 changes the database and authorization behavior. Changing the image 
 
 Removed code includes eight duplicated Python scripts, seven per-application jobs, an inactive issuer template, a bundled public-indexer response and a sample Homarr dashboard. The Gluetun control service retains its existing name and selector, with a guard against duplicate emission by the port-forwarding subchart. Homarr automatic owner/dashboard setup was retired with that legacy dashboard code; use Homarr's own setup UI if you enable the optional chart. Homarr itself was not upgraded or runtime-validated in this run. Existing dashboards and claims are not reset by the new setup code.
 
-Sonarr and Bazarr retain UID/GID 568 with read-only roots using a dedicated writable S6 runtime directory. Their publisher does not generally support combined nonroot and read-only mode; repeat startup tests when changing images. Seerr has a dedicated writable image-cache directory. Bazarr's discontinued Podnapisi provider is no longer supplied as a default. FlareSolverr's existing Cloudflare challenge timeout remains a known limitation.
+Sonarr and Bazarr retain UID/GID 568 with read-only roots using a dedicated writable S6 runtime directory. Their publisher does not generally support combined nonroot and read-only mode; repeat startup tests when changing images. Seerr has a dedicated writable image-cache directory. Bazarr's discontinued Podnapisi provider is no longer supplied as a default. New FlareSolverr proxies use a 120 s request timeout; Cloudflare challenge solves took about 50 s on a Pi 4, and the former 60 s limit timed out intermittently.
 
 The old shared PVCs were created as hooks and remain retained hooks to preserve ownership. They are not deleted on hook failure. Existing claims are reused; disabling creation does not delete an existing claim. Removing a Helm release does not automatically clean up retained hook resources. Setup Secret/ConfigMap/jobs use release-prefixed names in 2.0; old fixed-name setup hooks may be removed manually after a successful upgrade when no other release uses them.
 

@@ -1,7 +1,25 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "type": "object",
+  "definitions": {
+    "reconcileArr": {
+      "type": "object", "additionalProperties": false, "required": ["config", "bazarrWebhook"],
+      "properties": {
+        "config": {"type": "object", "propertyNames": {"pattern": "^[a-z]+$"}, "additionalProperties": {"type": "object"}},
+        "bazarrWebhook": {"type": "boolean"}
+      }
+    }
+  },
   "properties": {
+    "reconcile": {
+      "type": "object", "additionalProperties": false, "required": ["enabled", "timeoutSeconds", "sonarr", "radarr"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "timeoutSeconds": {"type": "integer", "minimum": 30, "maximum": 3600},
+        "sonarr": {"$ref": "#/definitions/reconcileArr"},
+        "radarr": {"$ref": "#/definitions/reconcileArr"}
+      }
+    },
     "setup": {
       "type": "object",
       "required": ["enabled", "onUpgrade", "image", "timeoutSeconds", "secretKeys", "paths", "categories"],
