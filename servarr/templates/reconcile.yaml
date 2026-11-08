@@ -1,0 +1,88 @@
+{{- define "servarr.reconcile.pod" -}}
+{{- $apps := list "sonarr" "radarr" "bazarr" -}}
+metadata:
+  labels:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: reconcile
+spec:
+  restartPolicy: Never
+  automountServiceAccountToken: false
+  {{- with .Values.global.nodeSelector }}
+  nodeSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  securityContext:
+    runAsUser: 568
+    runAsGroup: 568
+    runAsNonRoot: true
+    fsGroup: 568
+    fsGroupChangePolicy: OnRootMismatch
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: reconcile
+      image: {{ .Values.setup.image | quote }}
+      command: [bun, /reconcile/setup.ts, reconcile]
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop: [ALL]
+      resources:
+        requests:
+          cpu: 25m
+          memory: 64Mi
+        limits:
+          cpu: 500m
+          memory: 256Mi
+      volumeMounts:
+        - name: script
+          mountPath: /reconcile
+          readOnly: true
+        {{- range $app := $apps }}
+        - name: {{ $app }}-config
+          mountPath: /configs/{{ $app }}
+          readOnly: true
+        {{- end }}
+  volumes:
+    - name: script
+      configMap:
+        name: {{ .Release.Name }}-reconcile
+    {{- range $app := $apps }}
+    - name: {{ $app }}-config
+      persistentVolumeClaim:
+        claimName: {{ (index $.Values $app).persistence.config.existingClaim | default (printf "%s-%s-config" $.Release.Name $app) }}
+    {{- end }}
+{{- end }}
+{{- if .Values.reconcile.enabled }}
+{{- $apps := list "sonarr" "radarr" "bazarr" }}
+{{- $urls := dict }}
+{{- range $app := $apps }}
+{{- $_ := set $urls $app (printf "http://%s-%s.%s.svc.cluster.local:%v" $.Release.Name $app $.Release.Namespace (index $.Values $app).service.main.ports.main.port) }}
+{{- end }}
+{{- $arr := dict "sonarr" .Values.reconcile.sonarr "radarr" .Values.reconcile.radarr }}
+{{- $settings := dict "urls" $urls "timeoutSeconds" .Values.reconcile.timeoutSeconds "arr" $arr | toPrettyJson }}
+{{- $script := .Files.Get "config/setup/setup.ts" }}
+{{- $pod := include "servarr.reconcile.pod" . }}
+{{- /* Job pod templates are immutable: any change to the script, settings or pod gets a new name and a rerun. */}}
+{{- $digest := print $script $settings $pod | sha256sum | trunc 10 }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-reconcile
+data:
+  setup.ts: |
+{{ $script | indent 4 }}
+  reconcile.json: |
+{{ $settings | indent 4 }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-reconcile-{{ $digest }}
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: {{ .Values.reconcile.timeoutSeconds }}
+  template:
+{{ $pod | indent 4 }}
+{{- end }}

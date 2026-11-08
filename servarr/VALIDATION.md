@@ -1,3 +1,7 @@
+# Chart 2.1.0 validation
+
+Validated on 2026-11-08 against the existing Pi K3s release (chart 2.0.1 services). `bun test tests` (24 tests) and `helm lint` pass. The rendered reconcile job (before its digest also covered the pod template; same pod spec) ran once as a standalone job with the release's own claims: after Radarr `importExtraFiles` was reverted and the Sonarr Bazarr webhook removed, it reported Radarr media management updated and the Sonarr webhook created, with Radarr indexer, naming and webhook unchanged. A second run reported every setting unchanged. Both webhook connection tests returned HTTP 200 from Bazarr 1.6.0. Prowlarr's FlareSolverr proxy solved an EZTV challenge in 47-53 s, which the 120 s timeout accommodates.
+
 # Chart 2.0.1 validation
 
 Validated on 2026-09-14 in disposable ARM64 Kubernetes and the existing Pi K3s cluster. The existing Pi service upgrade was accepted on chart 2.0.0 with the service versions listed in the README. Chart 2.0.1 fixes Helm 4.3 scheduling compatibility while retaining those application versions. No service backup or SSD migration was performed.

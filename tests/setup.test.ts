@@ -1,7 +1,7 @@
 import { afterEach, expect, test } from 'bun:test';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { API, ensureResource, prepareQbit, qbitLogin, schemaFields, setupArr, setupJellyfin, setupProwlarr, setupSeerr, type Integration, type ObjectValue } from '../servarr/config/setup/setup';
+import { API, ensureResource, prepareQbit, qbitLogin, reconcile, reconcileBazarrWebhook, reconcileConfig, schemaFields, setupArr, setupJellyfin, setupProwlarr, setupSeerr, type Integration, type ObjectValue } from '../servarr/config/setup/setup';
 const servers: ReturnType<typeof Bun.serve>[] = [], folders: string[] = [];
 afterEach(async () => { for (const s of servers.splice(0)) s.stop(true); for (const f of folders.splice(0)) await rm(f, { recursive: true, force: true }); });
 function server(handler: (r: Request) => Response | Promise<Response>) { const s = Bun.serve({ port: 0, fetch: handler }); servers.push(s); return s.url.origin; }
@@ -112,4 +112,61 @@ test('Seerr sends only writable settings, enables its library and finalizes last
   expect(writes.find(w=>w.path.endsWith('/main'))?.body).toEqual({locale:'en'});
   expect(writes.at(-1)?.path).toBe('/api/v1/settings/initialize');
   expect(integrations['/api/v1/settings/sonarr'][0].activeProfileId).toBe(7);
+});
+function arrServer() {
+  const state = { config: { mediamanagement: { id: 1, importExtraFiles: true, extraFileExtensions: 'srt' } } as Record<string, ObjectValue>, notifications: [] as ObjectValue[], writes: [] as string[] };
+  const webhook = { implementation: 'Webhook', onGrab: false, onDownload: false, onUpgrade: false, onImportComplete: false, supportsOnGrab: true, fields: ['url', 'method', 'username', 'password', 'headers'].map(name => ({ name, value: name === 'headers' ? [] : undefined })) };
+  const url = server(async r => {
+    const path = new URL(r.url).pathname;
+    if (path === '/api/v3/system/status') return Response.json({ version: 'test' });
+    if (path === '/api/v3/notification/schema') return Response.json([{ implementation: 'Email', fields: [] }, webhook]);
+    const kind = path.match(/^\/api\/v3\/config\/([a-z]+)(?:\/\d+)?$/)?.[1];
+    if (r.method !== 'GET') state.writes.push(`${r.method} ${path}`);
+    if (kind && r.method === 'GET') return Response.json(state.config[kind]);
+    if (kind) return Response.json(state.config[kind] = await r.json());
+    if (path === '/api/v3/notification' && r.method === 'GET') return Response.json(state.notifications);
+    if (path === '/api/v3/notification') { const row = { ...(await r.json()), id: state.notifications.length + 1 }; state.notifications.push(row); return Response.json(row, { status: 201 }); }
+    const id = Number(path.match(/^\/api\/v3\/notification\/(\d+)$/)?.[1]);
+    if (id) { const body: ObjectValue = await r.json(); state.notifications[id - 1] = body; return Response.json(body); }
+    return new Response(null, { status: 404 });
+  });
+  return { url, state };
+}
+test('declared Arr config converges only changed keys and rejects unknown ones', async () => {
+  const { url, state } = arrServer(), api = new API(url + '/api/v3');
+  expect(await reconcileConfig(api, 'mediamanagement', { importExtraFiles: false, extraFileExtensions: 'srt' })).toEqual(['importExtraFiles']);
+  expect(state.config.mediamanagement).toEqual({ id: 1, importExtraFiles: false, extraFileExtensions: 'srt' });
+  expect(await reconcileConfig(api, 'mediamanagement', { importExtraFiles: false })).toEqual([]);
+  expect(state.writes).toEqual(['PUT /api/v3/config/mediamanagement/1']);
+  await expect(reconcileConfig(api, 'mediamanagement', { importExtraFile: false })).rejects.toThrow('Unsupported mediamanagement setting');
+  await expect(reconcileConfig(api, '../system', {})).rejects.toThrow('Invalid config kind');
+});
+test('Bazarr webhook uses each app import event, is idempotent and follows key rotation', async () => {
+  for (const [app, events] of [['radarr', ['onDownload', 'onUpgrade']], ['sonarr', ['onImportComplete']]] as const) {
+    const { url, state } = arrServer(), api = new API(url + '/api/v3');
+    expect(await reconcileBazarrWebhook(app, api, 'http://bazarr:6767', 'key-1')).toBe('created');
+    const row = state.notifications[0] as Integration & ObjectValue;
+    expect(row.name).toBe('Bazarr');
+    expect(Object.keys(row).filter(k => /^on[A-Z]/.test(k) && row[k] === true)).toEqual([...events]);
+    expect(row.fields.find(f => f.name === 'url')!.value).toBe(`http://bazarr:6767/api/webhooks/${app}`);
+    expect(row.fields.find(f => f.name === 'headers')!.value).toEqual([{ key: 'X-API-KEY', value: 'key-1' }]);
+    expect(await reconcileBazarrWebhook(app, api, 'http://bazarr:6767', 'key-1')).toBe('unchanged');
+    state.notifications[0] = { ...row, name: 'Subtitles' };
+    expect(await reconcileBazarrWebhook(app, api, 'http://bazarr:6767', 'key-2')).toBe('updated');
+    expect(state.notifications).toHaveLength(1);
+    const updated = state.notifications[0] as Integration & ObjectValue;
+    expect(updated.name).toBe('Subtitles'); expect(updated.id).toBe(1);
+    expect(updated.fields.find(f => f.name === 'headers')!.value).toEqual([{ key: 'X-API-KEY', value: 'key-2' }]);
+  }
+});
+test('reconcile reads saved keys and touches only apps with declarations', async () => {
+  const dir = await mkdtemp(tmpdir() + '/servarr-reconcile-'); folders.push(dir);
+  await Bun.write(dir + '/radarr/config.xml', '<Config><ApiKey>radarrkey</ApiKey></Config>');
+  await Bun.write(dir + '/bazarr/config/config.yaml', 'auth:\n  apikey: bazarrkey\n');
+  const radarr = arrServer(); let sonarrRequests = 0;
+  const sonarr = server(() => { sonarrRequests++; return new Response(null, { status: 500 }); });
+  await reconcile({ urls: { radarr: radarr.url, sonarr, bazarr: 'http://bazarr:6767' }, timeoutSeconds: 1, arr: { radarr: { config: { mediamanagement: { importExtraFiles: false } }, bazarrWebhook: true }, sonarr: { config: {}, bazarrWebhook: false } } }, dir);
+  expect(radarr.state.config.mediamanagement.importExtraFiles).toBe(false);
+  expect((radarr.state.notifications[0] as Integration).fields.find(f => f.name === 'headers')!.value).toEqual([{ key: 'X-API-KEY', value: 'bazarrkey' }]);
+  expect(sonarrRequests).toBe(0);
 });

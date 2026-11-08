@@ -1031,3 +1031,16 @@ setup:
   seerr:
     sonarrProfile: ""
     radarrProfile: ""
+# Converges declared Sonarr/Radarr settings on every values change. It reads only API keys
+# from the read-only config volumes: no user credentials and no Helm hooks.
+reconcile:
+  enabled: false
+  timeoutSeconds: 600
+  sonarr:
+    # -- Merged into /api/v3/config/<kind>, e.g. mediamanagement, indexer or naming. Unknown keys fail the job.
+    config: {}
+    # -- Notify Bazarr on import so it searches subtitles immediately.
+    bazarrWebhook: false
+  radarr:
+    config: {}
+    bazarrWebhook: false
